@@ -32,20 +32,20 @@ router.get('/user', (req, res) => {
     if(err)throw err;
     function cardList(id,title,description,imagePath){
         return `
-            <div class="col">
+            <div class="d-inline-block">
               <a href="/o/${id}">
-                <div class="card" style="width: 15rem; margin-top: 20px;" >
-                  <img src="../${imagePath}" class="card-img-top" style= 'height:250px; ' alt="card image cap">
-                    <div class="card-body">
-                      <h5 class="card-title">${title}</h5>
-                      <p class="card-text">${description}</p>
+                <div>
+                  <img src="../${imagePath}" alt="card image cap">
+                    <div>
+                      <h5>${title}</h5>
+                      <p>${description}</p>
                     </div>
                 </div>
               </a>
             </div>
       `;
       }
-    var card_list = '<div class="row">';
+    var card_list = '';
       var i = 0;
       while(i < result.length){
         var o_id = result[i].id;
@@ -55,7 +55,7 @@ router.get('/user', (req, res) => {
         card_list = card_list + cardList(o_id, card_o_name,description,imagePath);
         i = i + 1;
       }
-      var card_list = card_list + '</div>';
+      // var card_list = card_list + '</div>';
       var html = template.HTML(card_list, auth.StatusUI(req, res));
       res.send(html);
   });
@@ -66,20 +66,20 @@ router.get('/', (req, res) => {
     db.query('SELECT * FROM topic', function(err, result){
       function cardList(id,title,description,imagePath){
           return `
-              <div class="col">
-                <a href="/o/${id}">
-                  <div class="card mx-auto my-2 shadow border-0" style="max-width:15rem" >
-                    <img src="../${imagePath}" class="card-img-top" style= 'height:250px; ' alt="card image cap">
+              <div>
+                <a href="/o/${id}" class="text-decoration-none">
+                  <div class="card border-0 rounded-lg">
+                    <img src="../${imagePath}" class="card-img-top w-100" alt="card image cap">
                       <div class="card-body">
-                        <h5 class="card-title">${title}</h5>
-                        <p class="card-text">${description}</p>
+                        <h5 class="card-title text-dark font-weight-bolder">${title}</h5>
+                        <p class="card-text text-dark">${description}</p>
                       </div>
                   </div>
                 </a>
               </div>
         `;
         }
-      var card_list = '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">';
+      var card_list = '<div class="card-columns my-3">';
         var i = 0;
         while(i < result.length){
           var o_id = result[i].id;
@@ -119,14 +119,12 @@ router.post('/create_process', image_array,function (req, res, next) {
   var images = []
   for(var i = 1; i < 6; i++){
     if (req.files[`o_image_${i}`] == undefined){
-      console.log(i);
       images.push(null);
     }
     else{
       images.push(req.files[`o_image_${i}`][0].path.slice(7))
     }
   }
-  console.log(images);
   db.query('INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, user_id) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?)',
   [req.body.o_name, req.body.o_memo, req.body.o_time, images[0], images[1], images[2], images[3], images[4], req.user.id,  req.body.Lat, req.body.Lng],function(err, result){
     if(err)throw err;
@@ -220,7 +218,6 @@ router.post('/delete', (req, res) => {
 router.get('/:pageId' , (req, res) => {
   var pageId = req.params.pageId;
   db.query('SELECT * FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?',[pageId],function(err, result){
-
     var str = ""
     var carouselIndicators=""
     var imageNum = Object.keys(result[0]).length ;
@@ -264,8 +261,8 @@ router.get('/:pageId' , (req, res) => {
           </div>
         </div>
         <div class ="col">
-          <h4>${result[0].displayName} <small>${result[0].description}</small></h4>
-          <p>${result[0].created}</p>
+          <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
+          <p>${result[0].created.toLocaleDateString()}</p>
           <form action = "/o/update/${pageId}" method = "post">
             <input type = "hidden" name = "o_id"  value = "${pageId}">
             <input type = "${auth.updateHide(req,result)}" value ="수정하기">
