@@ -235,6 +235,13 @@ router.get('/:pageId' , (req, res) => {
         `</div>`
       }
     }
+    var date = result[0].created.toLocaleDateString();
+    var koreanDate = ["년 ", "월 "];
+    for(var i = 0; i < 2; i++){
+      date = date.replace('-', koreanDate[i]);
+    }
+    date = date + "일";
+    
       var html = template.HTML(`
       <h1>${result[0].o_name}</h1>
       <div class="row row-cols-1 row-cols-md-2">
@@ -262,7 +269,7 @@ router.get('/:pageId' , (req, res) => {
         </div>
         <div class ="col">
           <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
-          <p>${result[0].created.toLocaleDateString()}</p>
+          <p>${date}</p>
           <form action = "/o/update/${pageId}" method = "post">
             <input type = "hidden" name = "o_id"  value = "${pageId}">
             <input type = "${auth.updateHide(req,result)}" value ="수정하기">
