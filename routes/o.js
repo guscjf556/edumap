@@ -125,7 +125,7 @@ router.post('/create_process', image_array,function (req, res, next) {
       images.push(req.files[`o_image_${i}`][0].path.slice(7))
     }
   }
-  db.query('INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, user_id) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?)',
+  db.query('INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, user_id, Lat, Lng) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?)',
   [req.body.o_name, req.body.o_memo, req.body.o_time, images[0], images[1], images[2], images[3], images[4], req.user.id,  req.body.Lat, req.body.Lng],function(err, result){
     if(err)throw err;
   })
