@@ -102,7 +102,7 @@ router.get('/create', (req,res)=>{
     res.redirect('/o');
     return false;
   }
-  const html = template.HTML(template.create,auth.StatusUI(req, res));
+  const html = template.HTML(template.create(),auth.StatusUI(req, res));
   res.send(html);
 });
 
