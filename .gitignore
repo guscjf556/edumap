@@ -42,7 +42,7 @@ node_modules/
 jspm_packages/
 practice/
 public/images/*
-sesssion/
+session/
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
