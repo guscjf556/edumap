@@ -5,6 +5,7 @@ var multer  = require('multer')
 var template = require('../lib/template.js');
 var fs = require('fs');
 var db = require('../lib/db');
+const mapMaker = require('../lib/mapMaker');
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
@@ -31,34 +32,34 @@ router.get('/user', (req, res) => {
   db.query('SELECT * FROM topic WHERE topic.user_id = ? ',[req.user.id], function(err, result){
     if(err)throw err;
     function cardList(id,title,description,imagePath){
-        return `
-            <div class="d-inline-block">
-              <a href="/o/${id}">
-                <div>
-                  <img src="../${imagePath}" alt="card image cap">
-                    <div>
-                      <h5>${title}</h5>
-                      <p>${description}</p>
-                    </div>
-                </div>
-              </a>
-            </div>
-      `;
-      }
-    var card_list = '';
-      var i = 0;
-      while(i < result.length){
-        var o_id = result[i].id;
-        var imagePath =result[i].o_image_1;
-        var card_o_name = result[i].o_name;
-        var description = result[i].description;
-        card_list = card_list + cardList(o_id, card_o_name,description,imagePath);
-        i = i + 1;
-      }
-      // var card_list = card_list + '</div>';
-      var html = template.HTML(card_list, auth.StatusUI(req, res));
-      res.send(html);
-  });
+      return `
+          <div>
+            <a href="/o/${id}" class="text-decoration-none">
+              <div class="card border-0 rounded-lg">
+                <img src="../${imagePath}" class="card-img-top w-100" alt="card image cap">
+                  <div class="card-body">
+                    <h5 class="card-title text-dark font-weight-bolder">${title}</h5>
+                    <p class="card-text text-dark">${description}</p>
+                  </div>
+              </div>
+            </a>
+          </div>
+    `;
+    }
+  var card_list = '<div class="card-columns my-3">';
+    var i = 0;
+    while(i < result.length){
+      var o_id = result[i].id;
+      var imagePath =result[i].o_image_1;
+      var card_o_name = result[i].o_name;
+      var description = result[i].description;
+      card_list = card_list + cardList(o_id, card_o_name,description,imagePath);
+      i = i + 1;
+    }
+    var card_list = card_list + '</div>';
+    var html = template.HTML(card_list, auth.StatusUI(req, res));
+    res.send(html);
+});
 });
 
 // 카드 및 첫화면
@@ -241,7 +242,7 @@ router.get('/:pageId' , (req, res) => {
       date = date.replace('-', koreanDate[i]);
     }
     date = date + "일";
-    
+    const LatLng = `${result[0].Lat},${result[0].Lng}`
       var html = template.HTML(`
       <h1>${result[0].o_name}</h1>
       <div class="row row-cols-1 row-cols-md-2">
@@ -270,6 +271,7 @@ router.get('/:pageId' , (req, res) => {
         <div class ="col">
           <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
           <p>${date}</p>
+          ${mapMaker.static('width:20rem;height:20rem;', 3 ,`${LatLng}`)}
           <form action = "/o/update/${pageId}" method = "post">
             <input type = "hidden" name = "o_id"  value = "${pageId}">
             <input type = "${auth.updateHide(req,result)}" value ="수정하기">
