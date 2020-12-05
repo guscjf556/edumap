@@ -33,4 +33,6 @@ app.use('/u', uRouter);
 app.use('/map', mapRouter);
 
 
-app.listen(port, () => {});
+app.listen(port, () => {
+  console.log('Ok 3000!')
+});
