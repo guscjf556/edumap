@@ -33,7 +33,7 @@ router.get('/', (req,res)=>{
 //개인지도
 router.get('/user', (req,res)=>{
     if(!auth.IsOwner(req,res)){
-      res.redirect('/o');
+      res.redirect('/o/notLogin');
       return false;
     }
   db.query('SELECT id, o_name, Lat, Lng FROM topic WHERE user_id = ?',[req.user.id], (err, result)=>{

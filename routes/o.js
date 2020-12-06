@@ -26,7 +26,7 @@ var auth = require('../lib/auth');
 //개인별 데이터
 router.get('/user', (req, res) => {
   if(!auth.IsOwner(req,res)){
-    res.redirect('/o');
+    res.redirect('/o/notLogin');
     return false;
   }
   db.query('SELECT * FROM topic WHERE topic.user_id = ? ',[req.user.id], function(err, result){
@@ -61,6 +61,16 @@ router.get('/user', (req, res) => {
     res.send(html);
 });
 });
+
+//로그인 안되었을시
+router.get('/notLogin', (req, res)=> {
+  const html = template.HTML(`
+  로그인을 해야 이용할 수 있습니다.<br>
+  <a href = "/u/login">로그인하기</a><br>
+  <a href = "/o">홈으로 돌아가기</a>
+  `, auth.StatusUI(req, res));
+  res.send(html);
+})
 
 // 카드 및 첫화면
 router.get('/', (req, res) => {
@@ -271,13 +281,21 @@ router.get('/:pageId' , (req, res) => {
         <div class ="col">
           <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
           <p>${date}</p>
-          ${mapMaker.static('width:20rem;height:20rem;', 3 ,`${LatLng}`)}
+          ${mapMaker.move('width:20rem;height:20rem;', 3 ,`${LatLng}`,`{
+            content: '<div><a href="/o/${result[0].id}" target = "_blank">${result[0].o_name}</a></div>', 
+            latlng: new kakao.maps.LatLng(${result[0].Lat}, ${result[0].Lng})
+        }`)}
           <form action = "/o/update/${pageId}" method = "post">
             <input type = "hidden" name = "o_id"  value = "${pageId}">
             <input type = "${auth.updateHide(req,result)}" value ="수정하기">
           </form>
         </div>
       </div>
+      <script>
+       if(${result[0].Lat}===0){
+        document.querySelector('#map').style.display="none";
+       }
+      </script>
     `,auth.StatusUI(req, res));
     res.send(html);
     });
