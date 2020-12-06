@@ -245,7 +245,7 @@ router.get('/:pageId' , (req, res) => {
         `</div>`
       }
     }
-    var date = result[0].created.toLocaleDateString();
+    var date = result[0].created.toLocaleDateString('ko-KR');
     var koreanDate = ["년 ", "월 "];
     for(var i = 0; i < 2; i++){
       date = date.replace('-', koreanDate[i]);
