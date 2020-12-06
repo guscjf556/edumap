@@ -209,9 +209,8 @@ router.post('/update/:pageId', (req, res) => {
 router.post('/delete', (req, res) => {
   db.query('SELECT * FROM topic WHERE id = ?',[req.body.o_id],function(err, result){
     if(err)throw err;
-    var imageNum = Object.keys(result[0]).length;
     var imageArray = Object.values(result[0])
-    for(var i = 4; i < imageNum-1; i ++){
+    for(var i = 4; i < 9; i ++){
       if(imageArray[i] === null){
         break;
       }
