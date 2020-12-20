@@ -94,7 +94,7 @@ router.get("/", (req, res) => {
       const postData = ${result_string};
       let postCounter = 10
       function cardList(id, title, description, imagePath) {
-        return '<div><a href="/o/' + id + '" class="text-decoration-none"><div class="card border-0 rounded-lg"><img src="../' + imagePath + '" class="card-img-top w-100" alt="card image cap"><div class="card-body"><h5 class="card-title text-dark font-weight-bolder">' + title + '</h5><p class="card-text text-dark">' + description + '</p></div></div></a></div>';
+        return '<div class="shadow-sm"><a href="/o/' + id + '" class="text-decoration-none"><div class="card border-0 rounded-lg"><img src="../' + imagePath + '" class="card-img-top w-100" alt="card image cap"><div class="card-body"><h5 class="card-title text-dark font-weight-bolder">' + title + '</h5><p class="card-text text-dark">' + description + '</p></div></div></a></div>';
       };
       //첫 게시물 일단 10개만 뜨도록(개수는 postCounter로 수정 가능)
       var card_list = '';
@@ -312,6 +312,7 @@ router.get("/:pageId", (req, res) => {
       const LatLng = `${result[0].Lat},${result[0].Lng}`;
       var html = template.HTML(
         `
+      <div class="container">
       <h1>${result[0].o_name}</h1>
       <div class="row row-cols-1 row-cols-md-2">
         <div class = "col">
@@ -337,14 +338,14 @@ router.get("/:pageId", (req, res) => {
               <span class="sr-only">Next</span>
           </a>
           </div>
-        </div>
-        <div class ="col">
-          <h4>${result[0].displayName} <small class="text-muted">${
-          result[0].description
-        }</small></h4>
+          <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
           <p>${date}</p>
+        </div>
+        <hr class="d-md-none">
+        <div class ="col">
+          <h5>관찰 위치</h5>
           ${mapMaker.move(
-            "width:20rem;height:20rem;",
+            "height:10rem;pointer-events: none",
             3,
             `${LatLng}`,
             `{
@@ -358,11 +359,12 @@ router.get("/:pageId", (req, res) => {
           </form>
         </div>
       </div>
+      </div>
       <script>
-       if(${result[0].Lat}===0){
-        document.querySelector('#map').style.display="none";
-       }
-      </>
+        if(${result[0].Lat}===0){
+        document.querySelector('#map').style.display="none"
+        }
+      </script>
     `,
         auth.StatusUI(req, res)
       );
