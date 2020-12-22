@@ -186,27 +186,58 @@ router.post("/create_process", image_array, function (req, res, next) {
 router.post("/update/:pageId", (req, res) => {
   var pageId = req.params.pageId;
   db.query("SELECT * FROM topic WHERE id=?", [pageId], function (err, result) {
-    console.log(result[0])
     var html = template.HTML(template.revise(pageId, result), auth.StatusUI(req, res));
     res.send(html);
   });
 });
 
 // 글 수정하기 process
-router.post("/update_process", (req, res) => {
-  var post = req.body;
-  var o_name = post.o_name;
-  var created = post.created;
-  var description = post.description;
-  var topic_id = post.topic_id;
-  db.query(
-    "UPDATE topic SET o_name = ? , description = ?,  created = ? WHERE id = ?",
-    [o_name, description, created, topic_id],
-    (err, result) => {
-      if (err) throw err;
-      res.redirect(`/o/${topic_id}`);
+router.post("/update_process", image_array, (req, res, next) => {
+  var images = [];
+  for (var i = 1; i < 6; i++) {
+    if (req.files[`o_image_${i}`] == undefined) {
+      images.push(null);
+    } else {
+      images.push(req.files[`o_image_${i}`][0].path.slice(7));
     }
-  );
+  }
+  db.query("SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic WHERE id = ?", [req.body.topic_id], (err, result) => {
+    let imgPath = Object.values(result[0])
+    console.log('imgPath', imgPath)
+    for(let i = 0; i < images.length; i++){
+      if(!images[i]){
+        images[i] = imgPath[i];
+      }
+    }
+    console.log('images', images)
+    var revisedPost = req.body;
+    var o_name = revisedPost.o_name;
+    var description = revisedPost.o_memo;
+    var created = revisedPost.o_time;
+    var Lat = revisedPost.Lat;
+    var Lng = revisedPost.Lng;
+    var topic_id = revisedPost.topic_id;
+    db.query(
+      "UPDATE topic SET o_name = ? , description = ?,  created = ?, o_image_1 = ?, o_image_2= ?, o_image_3 = ?, o_image_4 = ?, o_image_5 = ?, Lat = ?, Lng = ? WHERE id = ?",
+      [
+        o_name, 
+        description, 
+        created, 
+        images[0],
+        images[1],
+        images[2],
+        images[3],
+        images[4],
+        Lat,
+        Lng,
+        topic_id
+      ],
+      (err, result) => {
+        if (err) throw err;
+        res.redirect(`/o/${topic_id}`);
+      }
+    );
+  })
 });
 
 // 글 삭제하기
@@ -265,14 +296,14 @@ router.get("/:pageId", (req, res) => {
             `</div>`;
         }
       }
-      var date = result[0].created.toLocaleDateString("ko-KR");
+      var date = result[0].created.toLocaleDateString('ko-KR');
       var koreanDate = ["년 ", "월 "];
       for (var i = 0; i < 2; i++) {
         date = date.replace("-", koreanDate[i]);
       }
       date = date + "일";
       const LatLng = `${result[0].Lat},${result[0].Lng}`;
-      var html = template.HTML(
+      var html = template.HTML( 
         `
       <div class="container">
       <h1>${result[0].o_name}</h1>
@@ -305,6 +336,7 @@ router.get("/:pageId", (req, res) => {
         </div>
         <hr class="d-md-none">
         <div class ="col">
+          <div id="mapContainer">
           <h5>관찰 위치</h5>
           ${mapMaker.move(
             "height:10rem;pointer-events: none",
@@ -315,6 +347,7 @@ router.get("/:pageId", (req, res) => {
             latlng: new kakao.maps.LatLng(${result[0].Lat}, ${result[0].Lng})
         }`
           )}
+          </div>
           <form action = "/o/update/${pageId}" method = "post">
             <input type = "hidden" class="form-control" id="o_id" name = "o_id"  value = "${pageId}">
             <input type = "${auth.updateHide(req, result)}" class="btn btn-dark" value ="수정하기">
@@ -324,7 +357,7 @@ router.get("/:pageId", (req, res) => {
       </div>
       <script>
         if(${result[0].Lat}===0){
-        document.querySelector('#map').style.display="none"
+        document.querySelector('#mapContainer').style.display="none"
         }
       </script>
     `,
