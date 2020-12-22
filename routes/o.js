@@ -1,11 +1,14 @@
 var express = require("express");
 var router = express.Router();
-var bodyParser = require("body-parser");
 var multer = require("multer");
 var template = require("../lib/template.js");
 var fs = require("fs");
 var db = require("../lib/db");
 const mapMaker = require("../lib/mapMaker");
+const imagemin = require('imagemin');
+const imageminMozjpeg = require('imagemin-mozjpeg');
+const imageminPngquant = require('imagemin-pngquant');
+const path = require('path');
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
@@ -141,7 +144,6 @@ router.get("/create", (req, res) => {
   const html = template.HTML(template.create(), auth.StatusUI(req, res));
   res.send(html);
 });
-
 //생성_과정
 let image_array = upload.fields([
   { name: "o_image_1", maxCount: 1 },
@@ -156,9 +158,12 @@ router.post("/create_process", image_array, function (req, res, next) {
     if (req.files[`o_image_${i}`] == undefined) {
       images.push(null);
     } else {
-      images.push(req.files[`o_image_${i}`][0].path.slice(7));
+      var imagePath = 'compressed-images//' + req.files[`o_image_${i}`][0].filename
+      images.push(imagePath);
     }
   }
+  console.log('imagePath',imagePath)
+  console.log(req.files);
   db.query(
     "INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, user_id, Lat, Lng) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?)",
     [
@@ -178,7 +183,28 @@ router.post("/create_process", image_array, function (req, res, next) {
       if (err) throw err;
     }
   );
-
+  //사진압축하는 부분
+  (async() => {
+      const files = await imagemin(
+          ['public/images/*.{jpg,png}'],
+          {
+            destination: 'public/compressed-images',
+            plugins: [imageminMozjpeg({quality: 20}),
+            imageminPngquant({quality: [0.3, 0.4]})
+            ]
+          }
+      );
+      fs.readdir('public/images', (err, files) => {
+        if (err) throw err;
+    
+        for (const file of files) {
+        fs.unlink(path.join('public/images', file), err => {
+            if (err) throw err;
+        });
+        }
+    });
+      console.log(files);
+    })();
   res.redirect("/o");
 });
 
