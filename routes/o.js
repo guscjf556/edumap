@@ -186,46 +186,8 @@ router.post("/create_process", image_array, function (req, res, next) {
 router.post("/update/:pageId", (req, res) => {
   var pageId = req.params.pageId;
   db.query("SELECT * FROM topic WHERE id=?", [pageId], function (err, result) {
-    var html = template.HTML(
-      `
-      <form action = "/o/update_process" method = "post">
-      <div class=search_filter>
-        <input type="hidden" name="topic_id" value="${result[0].id}">
-        <input type="hidden" name="user_id" value="${result[0].user_id}">
-        <span class=search_plant> (식물 이름 선택 필터)</span>
-        <sapn class=search_habitat> (서식지 선택 필터)</span>
-        <label for="freeName">자유이름: </label>
-        <input type="text" id="freeName" name="o_name" placeholder="자유이름" value="${result[0].o_name}" required>
-      </div>
-      <div class=upload>
-        <div class=upload_picture>
-        <label for="picture">사진: 이부분은 구현이 안되어있음 이미지 임시저장 및 프론트엔드 작업필요</label>
-        <input type="file" id="picture" name="picture" value = "이부분은 현재 구현이 안되어 있습니다.이미지 임시저장이 필요합니다.">
-        </div>
-        <span class = upload_time>
-          <label for="observeTime">관찰시간: </label>
-          <input id="observeTime" name ="created" type="datetime-local" value = "${result[0].created}" required>
-        </span>
-        <span class = upload_location>
-          (관찰위치 구현): ㅁㅁ
-          <label for="private">비공개</label>
-          <input id = "private" name = "private "type="checkbox">
-        </span>
-      </div>
-      <div class = upload_memo> 
-      <label for="observeMemo">관찰메모: </label>
-      <textarea id="observeMemo" name="description" placeholder="관찰한 내용을 입력하세요.">${result[0].description}</textarea>
-      </div>
-            <input type="submit" value = "수정하기">
-      </form>
-      <form action = "/o/delete" method = "post">
-        <input type = "hidden" name = "o_id"  value = "${pageId}">
-        <input type = "submit" value ="삭제하기">
-      </form>
-
-      `,
-      auth.StatusUI(req, res)
-    );
+    console.log(result[0])
+    var html = template.HTML(template.revise(pageId, result), auth.StatusUI(req, res));
     res.send(html);
   });
 });
@@ -354,8 +316,8 @@ router.get("/:pageId", (req, res) => {
         }`
           )}
           <form action = "/o/update/${pageId}" method = "post">
-            <input type = "hidden" name = "o_id"  value = "${pageId}">
-            <input type = "${auth.updateHide(req, result)}" value ="수정하기">
+            <input type = "hidden" class="form-control" id="o_id" name = "o_id"  value = "${pageId}">
+            <input type = "${auth.updateHide(req, result)}" class="btn btn-dark" value ="수정하기">
           </form>
         </div>
       </div>
