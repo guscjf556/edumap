@@ -194,7 +194,7 @@ router.post("/create_process", image_array, function (req, res, next) {
             ]
           }
       );
-      fs.readdir('public/images', (err, files) => {
+      await fs.readdir('public/images', (err, files) => {
         if (err) throw err;
     
         for (const file of files) {
@@ -203,9 +203,9 @@ router.post("/create_process", image_array, function (req, res, next) {
         });
         }
     });
-      console.log(files);
+      await res.redirect("/o");
     })();
-  res.redirect("/o");
+  
 });
 
 //  글 수정하기
