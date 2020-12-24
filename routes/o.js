@@ -12,15 +12,9 @@ const path = require('path');
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
-<<<<<<< HEAD
-  destination: function (req, file, cb) {
-    //현철: 임의로 멀터 파일 저장 경로를 수정했습니다. 필요에 맞게 다시 변경 부탁드려요!
-    cb(null, `public/images/${req.user.id}/`);
-=======
   destination: async function (req, file, cb) {
     !fs.existsSync(`public/images/${req.user.id}`) && fs.mkdirSync(`public/images/${req.user.id}`);
     cb(null, `public/images/${req.user.id}`);
->>>>>>> 1ed8358a7be59694802cd6cbc9601716ff882ccd
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "_" + file.originalname);
@@ -181,12 +175,8 @@ router.post("/create_process", image_array, function (req, res, next) {
     if (req.files[`o_image_${i}`] === undefined) {
       images.push(null);
     } else {
-<<<<<<< HEAD
       //현철: 여기도 임의로 경로를 수정했습니다.
       var imagePath = `images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
-=======
-      var imagePath = `compressed-images/${req.user.id}/` + req.files[`o_image_${i}`][0].filename
->>>>>>> 1ed8358a7be59694802cd6cbc9601716ff882ccd
       images.push(imagePath);
     }
   }
@@ -209,31 +199,6 @@ router.post("/create_process", image_array, function (req, res, next) {
       if (err) throw err;
     }
   );
-<<<<<<< HEAD
-=======
-  //사진압축하는 부분
-  (async() => {
-      const files = await imagemin(
-          [`public/images/${req.user.id}/*.{jpg,png}`],
-          {
-            destination: `public/compressed-images/${req.user.id}`,
-            plugins: [imageminMozjpeg({quality: 20}),
-            imageminPngquant({quality: [0.3, 0.4]})
-            ]
-          }
-      );
-      await fs.readdir(`public/images/${req.user.id}`, (err, files) => {
-        if (err) throw err;
-        for (const file of files) {
-        fs.unlink(path.join(`public/images/${req.user.id}`, file), err => {
-            if (err) throw err;
-        });
-        }
-    });
-      await res.redirect("/o");
-    })();
-  
->>>>>>> 1ed8358a7be59694802cd6cbc9601716ff882ccd
 });
 
 //  글 수정하기
