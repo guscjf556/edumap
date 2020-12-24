@@ -13,7 +13,8 @@ const path = require('path');
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/images/");
+    //현철: 임의로 멀터 파일 저장 경로를 수정했습니다. 필요에 맞게 다시 변경 부탁드려요!
+    cb(null, `public/images/${req.user.id}/`);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "_" + file.originalname);
@@ -144,6 +145,7 @@ router.get("/create", (req, res) => {
   const html = template.HTML(template.create(), auth.StatusUI(req, res));
   res.send(html);
 });
+
 //생성_과정
 let image_array = upload.fields([
   { name: "o_image_1", maxCount: 1 },
@@ -153,17 +155,30 @@ let image_array = upload.fields([
   { name: "o_image_5", maxCount: 1 },
 ]);
 router.post("/create_process", image_array, function (req, res, next) {
+  //현철: 비동기이고, 압축이 시간이 걸려서 앞으로 빼놨고 압축이 끝나면 /o로 리다이렉트 되게 했습니다.
+  (async() => {
+    const files = await imagemin(
+        //현철: 아래 경로도 임의로 수정했습니다.
+        [`public/images/${req.user.id}/*.{jpg,png}`],
+        {
+          destination: `public/images/${req.user.id}`,
+          plugins: [imageminMozjpeg({quality: 20}),
+          imageminPngquant({quality: [0.3, 0.4]})
+          ]
+        }
+    );
+    res.redirect('/o');
+  })();
   var images = [];
   for (var i = 1; i < 6; i++) {
-    if (req.files[`o_image_${i}`] == undefined) {
+    if (req.files[`o_image_${i}`] === undefined) {
       images.push(null);
     } else {
-      var imagePath = 'compressed-images//' + req.files[`o_image_${i}`][0].filename
+      //현철: 여기도 임의로 경로를 수정했습니다.
+      var imagePath = `images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
       images.push(imagePath);
     }
   }
-  console.log('imagePath',imagePath)
-  console.log(req.files);
   db.query(
     "INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, user_id, Lat, Lng) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?)",
     [
@@ -183,29 +198,6 @@ router.post("/create_process", image_array, function (req, res, next) {
       if (err) throw err;
     }
   );
-  //사진압축하는 부분
-  (async() => {
-      const files = await imagemin(
-          ['public/images/*.{jpg,png}'],
-          {
-            destination: 'public/compressed-images',
-            plugins: [imageminMozjpeg({quality: 20}),
-            imageminPngquant({quality: [0.3, 0.4]})
-            ]
-          }
-      );
-      fs.readdir('public/images', (err, files) => {
-        if (err) throw err;
-    
-        for (const file of files) {
-        fs.unlink(path.join('public/images', file), err => {
-            if (err) throw err;
-        });
-        }
-    });
-      console.log(files);
-    })();
-  res.redirect("/o");
 });
 
 //  글 수정하기
@@ -219,23 +211,39 @@ router.post("/update/:pageId", (req, res) => {
 
 // 글 수정하기 process
 router.post("/update_process", image_array, (req, res, next) => {
+  //현철: 여기도 생성하기 페이지와 같이 압축하는 비동기를 앞으로 빼놨고, 압축 과정이 끝나면 리다이렉트 되도록 했습니다.
+  (async() => {
+    const files = await imagemin(
+        [`public/images/${req.user.id}/*.{jpg,png}`],
+        {
+          destination: `public/images/${req.user.id}`,
+          plugins: [imageminMozjpeg({quality: 20}),
+          imageminPngquant({quality: [0.3, 0.4]})
+          ]
+        }
+    );
+    res.redirect(`/o/${req.body.topic_id}`);
+  })();
+
+  //추가되거나 변경된 파일의 경로가 담긴 배열 생성
   var images = [];
   for (var i = 1; i < 6; i++) {
     if (req.files[`o_image_${i}`] == undefined) {
       images.push(null);
     } else {
-      images.push(req.files[`o_image_${i}`][0].path.slice(7));
+      var imagePath = `images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
+      images.push(imagePath);
     }
   }
   db.query("SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic WHERE id = ?", [req.body.topic_id], (err, result) => {
-    let imgPath = Object.values(result[0])
-    console.log('imgPath', imgPath)
+    //현철: 데이터베이스에 저장된 사진의 기존 경로가 담긴 배열 생성
+    const imgPath = Object.values(result[0])
+    //현철: 수정을 통해 받아온 파일이 없다면(null), 기존 저장된 파일의 경로를 images 배열에 입력
     for(let i = 0; i < images.length; i++){
       if(!images[i]){
         images[i] = imgPath[i];
       }
     }
-    console.log('images', images)
     var revisedPost = req.body;
     var o_name = revisedPost.o_name;
     var description = revisedPost.o_memo;
@@ -260,7 +268,6 @@ router.post("/update_process", image_array, (req, res, next) => {
       ],
       (err, result) => {
         if (err) throw err;
-        res.redirect(`/o/${topic_id}`);
       }
     );
   })
@@ -269,17 +276,10 @@ router.post("/update_process", image_array, (req, res, next) => {
 // 글 삭제하기
 router.post("/delete", (req, res) => {
   db.query(
-    "SELECT * FROM topic WHERE id = ?",
+    "SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic WHERE id = ?",
     [req.body.o_id],
     function (err, result) {
       if (err) throw err;
-      var imageArray = Object.values(result[0]);
-      for (var i = 4; i < 9; i++) {
-        if (imageArray[i] === null) {
-          break;
-        }
-        fs.unlinkSync(`public/${imageArray[i]}`);
-      }
       db.query("DELETE FROM topic WHERE id = ?", [req.body.o_id]),
         function (err, result) {
           if (err) throw err;
