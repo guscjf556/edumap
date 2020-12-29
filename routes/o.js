@@ -5,10 +5,7 @@ var template = require("../lib/template.js");
 var fs = require("fs");
 var db = require("../lib/db");
 const mapMaker = require("../lib/mapMaker");
-const imagemin = require('imagemin');
-const imageminMozjpeg = require('imagemin-mozjpeg');
-const imageminPngquant = require('imagemin-pngquant');
-const path = require('path');
+const sharp = require('sharp');
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
@@ -158,16 +155,22 @@ let image_array = upload.fields([
 router.post("/create_process", image_array, function (req, res, next) {
   //현철: 비동기이고, 압축이 시간이 걸려서 앞으로 빼놨고 압축이 끝나면 /o로 리다이렉트 되게 했습니다.
   (async() => {
-    const files = await imagemin(
-        //현철: 아래 경로도 임의로 수정했습니다.
-        [`public/images/${req.user.id}/*.{jpg,png}`],
-        {
-          destination: `public/images/${req.user.id}`,
-          plugins: [imageminMozjpeg({quality: 20}),
-          imageminPngquant({quality: [0.3, 0.4]})
-          ]
-        }
-    );
+    !fs.existsSync(`public/compressed-images/${req.user.id}`) && fs.mkdirSync(`public/compressed-images/${req.user.id}`);
+    for(let i = 0; i<5; i++){
+      if(req.files[`o_image_${i+1}`]===undefined){
+        continue;
+      }
+        await sharp(req.files[`o_image_${i+1}`][0].path)
+        .resize(700, 700, {
+          fit: sharp.fit.contain,
+          withoutEnlargement: true,
+          background : {r:250, g:250, b:250, alpha: 0.5}
+        })
+        .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i+1}`][0].filename}`);
+        fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {
+          if(err)throw err;
+        })
+      }
     res.redirect('/o');
   })();
   var images = [];
@@ -176,7 +179,7 @@ router.post("/create_process", image_array, function (req, res, next) {
       images.push(null);
     } else {
       //현철: 여기도 임의로 경로를 수정했습니다.
-      var imagePath = `images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
+      var imagePath = `compressed-images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
       images.push(imagePath);
     }
   }
@@ -213,17 +216,24 @@ router.post("/update/:pageId", (req, res) => {
 // 글 수정하기 process
 router.post("/update_process", image_array, (req, res, next) => {
   //현철: 여기도 생성하기 페이지와 같이 압축하는 비동기를 앞으로 빼놨고, 압축 과정이 끝나면 리다이렉트 되도록 했습니다.
+  
   (async() => {
-    const files = await imagemin(
-        [`public/images/${req.user.id}/*.{jpg,png}`],
-        {
-          destination: `public/images/${req.user.id}`,
-          plugins: [imageminMozjpeg({quality: 20}),
-          imageminPngquant({quality: [0.3, 0.4]})
-          ]
-        }
-    );
-    res.redirect(`/o/${req.body.topic_id}`);
+    for(let i = 0; i<5; i++){
+      if(req.files[`o_image_${i+1}`]===undefined){
+        continue;
+      }
+        await sharp(req.files[`o_image_${i+1}`][0].path)
+        .resize(700, 700, {
+          fit: sharp.fit.contain,
+          withoutEnlargement: true,
+          background : {r:250, g:250, b:250, alpha: 0.5}
+        })
+        .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i+1}`][0].filename}`);
+        fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {
+          if(err)throw err;
+        })
+      }
+    res.redirect('/o');
   })();
 
   //추가되거나 변경된 파일의 경로가 담긴 배열 생성
@@ -232,7 +242,7 @@ router.post("/update_process", image_array, (req, res, next) => {
     if (req.files[`o_image_${i}`] == undefined) {
       images.push(null);
     } else {
-      var imagePath = `images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
+      var imagePath = `compressed-images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
       images.push(imagePath);
     }
   }
