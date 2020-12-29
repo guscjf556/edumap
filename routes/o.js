@@ -287,11 +287,19 @@ router.post("/update_process", image_array, (req, res, next) => {
 // 글 삭제하기
 router.post("/delete", (req, res) => {
   db.query(
-    "SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic WHERE id = ?",
-    [req.body.o_id],
-    function (err, result) {
+    "SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic WHERE id = ?",[req.body.o_id],function (err, result) {
       if (err) throw err;
-      db.query("DELETE FROM topic WHERE id = ?", [req.body.o_id]),
+      console.log(result);
+       for(let i=0; i<5; i++){
+          if(result[0][`o_image_${i+1}`]===null){
+            continue;
+          }
+          console.log('왜 안돼!!!',i);
+          fs.unlink(`public/${result[0][`o_image_${i+1}`]}`, (err) => {
+            if(err)throw err;
+          })
+        }
+        db.query("DELETE FROM topic WHERE id = ?", [req.body.o_id]),
         function (err, result) {
           if (err) throw err;
         };
