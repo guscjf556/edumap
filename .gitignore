@@ -1,3 +1,6 @@
+#db info
+lib/db.js
+
 # Logs
 logs
 *.log
