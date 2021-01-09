@@ -89,6 +89,11 @@ router.get("/", (req, res) => {
       <div id="card-cols" class="card-columns my-3">
       </div>
     </div>
+    <!-- 관찰 올리기 버튼 -->
+    <a href="javascript:showModal()" class="fixed-bottom d-lg-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-plus text-light bg-success rounded-circle shadow-sm d-block ml-auto mr-3 mb-3" viewBox="0 0 16 16">
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+    </a>
     <script>
       //브라우저에서 데이터를 조작할 수 있도록 postData 변수 생성
       //예상되는 문제: 데이터가 많아지면 불러와서 변수에 담는 데 시간 소요, 일단 100개만 select하고 필요할 때 새롭게 100개를 받아오는 방식으로 수정 필요할 듯 
