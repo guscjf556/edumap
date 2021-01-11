@@ -317,15 +317,13 @@ router.post("/delete", (req, res) => {
 router.get("/:pageId", (req, res) => {
   var pageId = req.params.pageId;
   db.query(
-    "SELECT * FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?",
+    "SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?",
     [pageId],
     function (err, result) {
       var str = "";
       let carouselContainer = ""
-      var imageNum = Object.keys(result[0]).length;
       var imageArray = Object.values(result[0]);
-      var carouselIndicatorsHowMany = 1;
-      for (var i = 5; i < 9; i++) {
+      for (var i = 0; i < 5; i++) {
         if (imageArray[i] === null) {
           continue;
         } else {
@@ -333,11 +331,6 @@ router.get("/:pageId", (req, res) => {
         }
       }
       var date = result[0].created.toLocaleDateString('ko-KR');
-      var koreanDate = ["년 ", "월 "];
-      for (var i = 0; i < 2; i++) {
-        date = date.replace("-", koreanDate[i]);
-      }
-      date = date + "일";
       const LatLng = `${result[0].Lat},${result[0].Lng}`;
       var html = template.HTML( 
         `
