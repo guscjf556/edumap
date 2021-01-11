@@ -321,7 +321,8 @@ router.get("/:pageId", (req, res) => {
     [pageId],
     function (err, result) {
       var str = "";
-      var carouselIndicators = "";
+      let carouselContainer = ""
+      //var carouselIndicators = """;
       var imageNum = Object.keys(result[0]).length;
       var imageArray = Object.values(result[0]);
       var carouselIndicatorsHowMany = 1;
@@ -329,21 +330,23 @@ router.get("/:pageId", (req, res) => {
         if (imageArray[i] === null) {
           continue;
         } else {
-          carouselIndicators =
-            carouselIndicators +
-            `<li data-target="#carouselPost" data-slide-to="${carouselIndicatorsHowMany}"></li>`;
-          carouselIndicatorsHowMany += 1;
-          var str =
-            str +
-            '<div class="carousel-item"' +
-            ">" +
-            '<img src="../' +
-            imageArray[i] +
-            '" class="d-block w-100" alt="' +
-            i +
-            '"' +
-            ">" +
-            `</div>`;
+          carouselContainer += `<div><img src="/${imageArray[i]}"></div>`
+          // carouselIndicators =
+          //   carouselIndicators +
+          //   `<li data-target="#carouselPost" data-slide-to="${carouselIndicatorsHowMany}"></li>`;
+          // carouselIndicatorsHowMany += 1;
+          // var str =
+          //   str +
+          //   '<div class="carousel-item"' +
+          //   ">" +
+          //   '<img src="../' +
+          //   imageArray[i] +
+          //   '" class="d-block w-100" alt="' +
+          //   i +
+          //   '"' +
+          //   ">" +
+          //   `</div>`;
+
         }
       }
       var date = result[0].created.toLocaleDateString('ko-KR');
@@ -359,27 +362,8 @@ router.get("/:pageId", (req, res) => {
       <h1>${result[0].o_name}</h1>
       <div class="row row-cols-1 row-cols-md-2">
         <div class = "col">
-        <div id="carouselPost" class="carousel slide" data-ride="carousel"   >
-          <ol class="carousel-indicators">
-            <li data-target="#carouselPost" data-slide-to="0" class="active"></li>
-            ${carouselIndicators}
-          </ol>
-            <div class="carousel-inner">
-            <div class="carousel-item active"  >
-              <img src="../${
-                result[0].o_image_1
-              }" class="d-block w-100" alt="1">
-            </div>
-            ${str}
-          </div>
-          <a class="carousel-control-prev" href="#carouselPost" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#carouselPost" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-          </a>
+          <div class="owl-carousel owl-theme">
+            ${carouselContainer}
           </div>
           <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
           <p>${date}</p>
@@ -405,6 +389,8 @@ router.get("/:pageId", (req, res) => {
         </div>
       </div>
       </div>
+      <script src="/jquery/jquery.js"></script>
+      <script src="/owlcarousel/owl.carousel.min.js"></script>
       <script>
         if(${result[0].Lat}===0){
         document.querySelector('#mapContainer').style.display="none"

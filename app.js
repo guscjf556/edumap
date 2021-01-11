@@ -10,6 +10,8 @@ const session = require('express-session');
   
 //정적파일, 바디파서, 세션 app에 설치
 app.use(express.static(__dirname + '/public'));
+app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
+app.use('/owlcarousel', express.static(__dirname + '/node_modules/owl.carousel/dist/'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
     secret: 'jsdnaskgl',
