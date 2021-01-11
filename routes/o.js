@@ -322,7 +322,6 @@ router.get("/:pageId", (req, res) => {
     function (err, result) {
       var str = "";
       let carouselContainer = ""
-      //var carouselIndicators = """;
       var imageNum = Object.keys(result[0]).length;
       var imageArray = Object.values(result[0]);
       var carouselIndicatorsHowMany = 1;
@@ -331,22 +330,6 @@ router.get("/:pageId", (req, res) => {
           continue;
         } else {
           carouselContainer += `<div class="item"><img src="/${imageArray[i]}"></div>`
-          // carouselIndicators =
-          //   carouselIndicators +
-          //   `<li data-target="#carouselPost" data-slide-to="${carouselIndicatorsHowMany}"></li>`;
-          // carouselIndicatorsHowMany += 1;
-          // var str =
-          //   str +
-          //   '<div class="carousel-item"' +
-          //   ">" +
-          //   '<img src="../' +
-          //   imageArray[i] +
-          //   '" class="d-block w-100" alt="' +
-          //   i +
-          //   '"' +
-          //   ">" +
-          //   `</div>`;
-
         }
       }
       var date = result[0].created.toLocaleDateString('ko-KR');
@@ -389,6 +372,7 @@ router.get("/:pageId", (req, res) => {
         </div>
       </div>
       </div>
+      <!-- owl.carousel 작동 코드 -->
       <script src="/jquery/jquery.min.js"></script>
       <script src="/owlcarousel/owl.carousel.min.js"></script>
       <script>
