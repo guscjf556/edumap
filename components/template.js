@@ -1,4 +1,4 @@
-const { query } = require("./db");
+const { query } = require("../lib/db");
 
 module.exports = {
   HTML: function (
