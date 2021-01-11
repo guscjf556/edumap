@@ -330,7 +330,7 @@ router.get("/:pageId", (req, res) => {
         if (imageArray[i] === null) {
           continue;
         } else {
-          carouselContainer += `<div><img src="/${imageArray[i]}"></div>`
+          carouselContainer += `<div class="item"><img src="/${imageArray[i]}"></div>`
           // carouselIndicators =
           //   carouselIndicators +
           //   `<li data-target="#carouselPost" data-slide-to="${carouselIndicatorsHowMany}"></li>`;
@@ -389,7 +389,17 @@ router.get("/:pageId", (req, res) => {
         </div>
       </div>
       </div>
+      <script src="/jquery/jquery.min.js"></script>
       <script src="/owlcarousel/owl.carousel.min.js"></script>
+      <script>
+      $('.owl-carousel').owlCarousel({
+        center: true,
+        items: 1,
+        loop:true,
+        margin:10,
+        nav:true,
+      })
+      </script>
       <script>
         if(${result[0].Lat}===0){
         document.querySelector('#mapContainer').style.display="none"
