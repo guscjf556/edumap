@@ -389,7 +389,6 @@ router.get("/:pageId", (req, res) => {
         </div>
       </div>
       </div>
-      <script src="/jquery/jquery.js"></script>
       <script src="/owlcarousel/owl.carousel.min.js"></script>
       <script>
         if(${result[0].Lat}===0){
