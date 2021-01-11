@@ -1,11 +1,14 @@
 var express = require("express");
 var router = express.Router();
 var multer = require("multer");
-var template = require("../lib/template.js");
+var template = require("../components/template.js");
 var fs = require("fs");
 var db = require("../lib/db");
 const mapMaker = require("../lib/mapMaker");
 const sharp = require('sharp');
+const newsFeed = require('../components/newsFeed');
+const post = require('../components/post');
+
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
@@ -20,7 +23,7 @@ var _storage = multer.diskStorage({
 var upload = multer({ storage: _storage });
 
 // 기본템플릿
-var template = require("../lib/template.js");
+var template = require("../components/template.js");
 var auth = require("../lib/auth");
 
 //개인별 데이터
@@ -34,34 +37,8 @@ router.get("/user", (req, res) => {
     [req.user.id],
     function (err, result) {
       if (err) throw err;
-      function cardList(id, title, description, imagePath) {
-        return `
-          <div>
-            <a href="/o/${id}" class="text-decoration-none">
-              <div class="card border-0 rounded-lg">
-                <img src="../${imagePath}" class="card-img-top w-100" alt="card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title text-dark font-weight-bolder">${title}</h5>
-                    <p class="card-text text-dark">${description}</p>
-                  </div>
-              </div>
-            </a>
-          </div>
-    `;
-      }
-      var card_list = '<div class="card-columns my-3">';
-      var i = 0;
-      while (i < result.length) {
-        var o_id = result[i].id;
-        var imagePath = result[i].o_image_1;
-        var card_o_name = result[i].o_name;
-        var description = result[i].description;
-        card_list =
-          card_list + cardList(o_id, card_o_name, description, imagePath);
-        i = i + 1;
-      }
-      var card_list = card_list + "</div>";
-      var html = template.HTML(card_list, auth.StatusUI(req, res));
+      const body = newsFeed(result);
+      const html = template.HTML(body, auth.StatusUI(req, res));
       res.send(html);
     }
   );
@@ -82,55 +59,9 @@ router.get("/notLogin", (req, res) => {
 
 // 카드 및 첫화면
 router.get("/", (req, res) => {
-  db.query("SELECT * FROM topic ORDER BY id DESC", function (err, result) {
-    const result_string = JSON.stringify(result);
-    const card_list = `
-    <div class="container my-5">
-      <div id="card-cols" class="card-columns my-3">
-      </div>
-      <button class="btn btn-outline-dark d-block mx-auto" onclick="loadMore();">더보기</button>
-    </div>
-    <!-- 관찰 올리기 버튼 -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor" class="bi bi-plus text-light bg-success rounded-circle shadow-sm d-block ml-auto mr-3 mb-3 fixed-bottom d-lg-none" viewBox="0 0 16 16" onclick="showModal()">
-      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-    <script>
-      //브라우저에서 데이터를 조작할 수 있도록 postData 변수 생성
-      //예상되는 문제: 데이터가 많아지면 불러와서 변수에 담는 데 시간 소요, 일단 100개만 select하고 필요할 때 새롭게 100개를 받아오는 방식으로 수정 필요할 듯 
-      const postData = ${result_string};
-      let postCounter = 10
-      function cardList(id, title, description, imagePath) {
-        return '<div class="shadow-sm"><a href="/o/' + id + '" class="text-decoration-none"><div class="card border-0 rounded-lg"><img src="../' + imagePath + '" class="card-img-top w-100 img-thumbnail" alt="card image cap"><div class="card-body"><h5 class="card-title text-dark font-weight-bolder">' + title + '</h5><p class="card-text text-dark">' + description + '</p></div></div></a></div>';
-      };
-      //첫 게시물 일단 10개만 뜨도록(개수는 postCounter로 수정 가능)
-      var card_list = '';
-      var i = 0;
-      while (i < postCounter && postData[i]) {
-        var o_id = postData[i].id;
-        var imagePath = postData[i].o_image_1;
-        var card_o_name = postData[i].o_name;
-        var description = postData[i].description;
-        card_list = card_list + cardList(o_id, card_o_name, description, imagePath);
-        i = i + 1;
-      }
-      document.getElementById("card-cols").innerHTML = card_list;
-
-      //무한스크롤(스크롤 끝까지 내리면 10개씩 새로 뜨도록)
-      function loadMore(){
-        for(var i = postCounter; i < postCounter + 10; i++){
-          if(postData[i]){
-            var o_id = postData[i].id;
-            var imagePath = postData[i].o_image_1;
-            var card_o_name = postData[i].o_name;
-            var description = postData[i].description;
-            card_list = card_list + cardList(o_id, card_o_name, description, imagePath);
-          }
-        }
-      document.getElementById("card-cols").innerHTML = card_list;
-      postCounter += 10;
-      }
-    </script>
-    `;
-    var html = template.HTML(card_list, auth.StatusUI(req, res));
+  db.query("SELECT * FROM topic ORDER BY id DESC", (err, result) => {
+    const body = newsFeed(result);
+    var html = template.HTML(body, auth.StatusUI(req, res));
     res.send(html);
   });
 });
@@ -221,7 +152,7 @@ router.post("/update_process", image_array, (req, res, next) => {
   
   (async() => {
     for(let i = 0; i<5; i++){
-      if(req.files[`o_image_${i+1}`]===undefined){
+      if(req.files[`o_image_${i+1}`] === undefined){
         continue;
       }
         await sharp(req.files[`o_image_${i+1}`][0].path)
@@ -314,75 +245,9 @@ router.get("/:pageId", (req, res) => {
   db.query(
     "SELECT * FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?",
     [pageId],
-    function (err, result) {
-      var str = "";
-      let carouselContainer = ""
-      var imageArray = Object.values(result[0]).slice(4, 9);
-      //test
-      console.log(imageArray);
-      for (var i = 0; i < 5; i++) {
-        if (imageArray[i] === null) {
-          continue;
-        } else {
-          carouselContainer += `<div class="item"><img src="/${imageArray[i]}"></div>`
-        }
-      }
-      var date = result[0].created.toLocaleDateString('ko-KR');
-      const LatLng = `${result[0].Lat},${result[0].Lng}`;
-      var html = template.HTML( 
-        `
-      <div class="container my-3">
-      <div class="d-flex justify-content-between">
-        <h1>${result[0].o_name}</h1>
-        <form action = "/o/update/${pageId}" method = "post">
-            <input type = "hidden" class="form-control" id="o_id" name = "o_id"  value = "${pageId}">
-            <input type = "${auth.updateHide(req, result)}" class="btn btn-dark" value ="수정하기">
-        </form>
-      </div>
-      <div class="row row-cols-1 row-cols-md-2">
-        <div class = "col">
-          <div class="owl-carousel owl-theme">
-            ${carouselContainer}
-          </div>
-          <h4>${result[0].displayName} <small class="text-muted">${result[0].description}</small></h4>
-          <p>${date}</p>
-        </div>
-        <br />
-        <div class ="col">
-          <div id="mapContainer">
-          <h5>관찰 위치</h5>
-          ${mapMaker.move(
-            "height:10rem;pointer-events: none",
-            3,
-            `${LatLng}`,
-            `{
-            content: '<div><a href="/o/${result[0].id}" target = "_blank">${result[0].o_name}</a></div>', 
-            latlng: new kakao.maps.LatLng(${result[0].Lat}, ${result[0].Lng})
-        }`
-          )}
-          </div>
-        </div>
-      </div>
-      </div>
-      <!-- owl.carousel 작동 코드 -->
-      <script src="/jquery/jquery.min.js"></script>
-      <script src="/owlcarousel/owl.carousel.min.js"></script>
-      <script>
-      $('.owl-carousel').owlCarousel({
-        items: 1,
-        loop:false,
-        margin:10,
-        nav:true,
-      })
-      </script>
-      <script>
-        if(${result[0].Lat}===0){
-        document.querySelector('#mapContainer').style.display="none"
-        }
-      </script>
-    `,
-        auth.StatusUI(req, res)
-      );
+    (err, result) => {
+      const body = post(result, req, auth);
+      const html = template.HTML(body, auth.StatusUI(req, res));
       res.send(html);
     }
   );
