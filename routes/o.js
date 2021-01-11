@@ -317,13 +317,15 @@ router.post("/delete", (req, res) => {
 router.get("/:pageId", (req, res) => {
   var pageId = req.params.pageId;
   db.query(
-    "SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?",
+    "SELECT * FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?",
     [pageId],
     function (err, result) {
       var str = "";
       let carouselContainer = ""
       var imageArray = Object.values(result[0]);
-      for (var i = 0; i < 5; i++) {
+      //test
+      console.log(imageArray);
+      for (var i = 5; i < 9; i++) {
         if (imageArray[i] === null) {
           continue;
         } else {
