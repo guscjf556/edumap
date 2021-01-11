@@ -205,7 +205,6 @@ router.post("/create_process", image_array, function (req, res, next) {
     ],
     function (err, result) {
       if (err) throw err;
-      res.send('로딩중입니다.');
     }
   );
 });
