@@ -294,12 +294,10 @@ router.post("/delete", (req, res) => {
   db.query(
     "SELECT o_image_1, o_image_2, o_image_3, o_image_4, o_image_5 FROM topic WHERE id = ?",[req.body.o_id],function (err, result) {
       if (err) throw err;
-      console.log(result);
-       for(let i=0; i<5; i++){
+       for(let i = 0; i < 5; i++){
           if(result[0][`o_image_${i+1}`]===null){
             continue;
           }
-          console.log('왜 안돼!!!',i);
           fs.unlink(`public/${result[0][`o_image_${i+1}`]}`, (err) => {
             if(err)throw err;
           })
@@ -322,10 +320,10 @@ router.get("/:pageId", (req, res) => {
     function (err, result) {
       var str = "";
       let carouselContainer = ""
-      var imageArray = Object.values(result[0]);
+      var imageArray = Object.values(result[0]).slice(4, 9);
       //test
       console.log(imageArray);
-      for (var i = 5; i < 9; i++) {
+      for (var i = 0; i < 5; i++) {
         if (imageArray[i] === null) {
           continue;
         } else {
