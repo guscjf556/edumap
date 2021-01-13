@@ -159,7 +159,7 @@ router.post("/update_process", image_array, (req, res, next) => {
         .resize(500, 500, {
           fit: sharp.fit.contain,
           withoutEnlargement: false,
-          background : {r:220, g:220, b:220, alpha: 1}
+          background : {r:255, g:255, b:255, alpha: 1}
         })
         .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i+1}`][0].filename}`);
         fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {

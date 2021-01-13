@@ -196,7 +196,7 @@ module.exports = {
       </div>
     </div>
     <!-- 로딩 모달 -->
-    <div id="loaderModal" class="modal" tabindex="-1">
+    <div id="loaderModal" class="modal fade" role="dialog" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center">
         서버 업로드 중입니다. 잠시만 기다려 주세요(1분 이내)
@@ -261,7 +261,7 @@ module.exports = {
       <script>
       $('#form').submit(function(e){
         e.preventDefault();
-        $('#loaderModal').show()
+        $('#loaderModal').modal('show')
         $.ajax({
           url: '/o/create_process',
           type: 'post',
@@ -274,7 +274,6 @@ module.exports = {
         })
       })
       </script>
-
     `;
   },
 
@@ -353,7 +352,7 @@ module.exports = {
       <div class="card-body">
         <h4 class="card-title text-bold">관찰 정보 수정하기</h4>
         <div class="card-text">
-          <form action="/o/update_process" method="post" enctype="multipart/form-data">
+          <form action="/o/update_process" id="form" method="post" enctype="multipart/form-data">
             <input type="hidden" name="topic_id" value="${queryResult[0].id}">
             <input type="hidden" name="user_id" value="${queryResult[0].user_id}">
             <div class="form-group">
@@ -423,10 +422,27 @@ module.exports = {
       </div>
     </div>
     </div>
+    <!-- 로딩 모달 -->
+    <div id="loaderModal" class="modal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+        서버 업로드 중입니다. 잠시만 기다려 주세요(1분 이내)
+          <div class="modal-body d-flex justify-content-center">
+            <div class="spinner-grow text-primary"></div> 
+            <div class="spinner-grow text-success"></div> 
+            <div class="spinner-grow text-info"></div> 
+            <div class="spinner-grow text-warning"></div> 
+            <div class="spinner-grow text-danger"></div> 
+            <div class="spinner-grow text-secondary"></div> 
+            <div class="spinner-grow text-dark"></div> 
+          </div>
+        </div>
+      </div>
+    </div>
       <script>
         ${previewJS()}
         function showDeleteModal(){
-          $('#modal-deletePost').modal('show')
+          $('#modal-deletePost').modal('show');
         }
       </script>
       <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
@@ -468,6 +484,23 @@ module.exports = {
   
       });
       </script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>      
+      <script>
+      $('#form').submit(function(e){
+        e.preventDefault();
+        $('#loaderModal').modal('show')
+        $.ajax({
+          url: '/o/update_process',
+          type: 'post',
+          data: new FormData(this),
+          processData: false,
+          contentType: false,
+          success: function(){
+            window.location.replace("/o")
+          }
+        })
+      })
+    </script>
     `;
   }
 };

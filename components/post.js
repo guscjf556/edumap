@@ -5,8 +5,6 @@ const post = (dbQueryResult, req, auth) => {
   let str = "";
   let carouselContainer = ""
   var imageArray = Object.values(dbQueryResult[0]).slice(4, 9);
-  //test
-  console.log(imageArray);
   for (var i = 0; i < 5; i++) {
     if (imageArray[i] === null) {
       continue;
@@ -34,11 +32,11 @@ const post = (dbQueryResult, req, auth) => {
         <div class="owl-carousel owl-theme">
           ${carouselContainer}
         </div>
-        <h4>${dbQueryResult[0].displayName} <small class="text-muted">${dbQueryResult[0].description}</small></h4>
-        <p>${date}</p>
       </div>
       <br />
       <div class ="col">
+        <h4>${dbQueryResult[0].displayName} <small class="text-muted">${dbQueryResult[0].description}</small></h4>
+        <p>${date}</p>
         <div id="mapContainer">
         <h5>관찰 위치</h5>
         ${mapMaker.move(
