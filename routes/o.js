@@ -93,13 +93,14 @@ router.post("/create_process", image_array, function (req, res, next) {
       if(req.files[`o_image_${i+1}`]===undefined){
         continue;
       }
-        await sharp(req.files[`o_image_${i+1}`][0].path)
+      await sharp(req.files[`o_image_${i + 1}`][0].path)
         .resize(500, 500, {
           fit: sharp.fit.contain,
           withoutEnlargement: false,
-          background : {r:255, g:255, b:255, alpha: 1}
+          background: { r: 255, g: 255, b: 255, alpha: 1 }
         })
-        .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i+1}`][0].filename}`);
+        .withMetadata()
+        .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i + 1}`][0].filename}`)
         fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {
           if(err)throw err;
         })
@@ -161,6 +162,7 @@ router.post("/update_process", image_array, (req, res, next) => {
           withoutEnlargement: false,
           background : {r:255, g:255, b:255, alpha: 1}
         })
+        .withMetadata()
         .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i+1}`][0].filename}`);
         fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {
           if(err)throw err;
