@@ -56,7 +56,9 @@ module.exports = {
             </button>
           </div>
         </nav>
-        ${body}
+        <main>
+          ${body}
+        </main>
       <!-- 모달 컴포넌트 -->
       <div class="modal fade" id="myModal" role="dialog" tabindex="-1">
         <div class="modal-dialog  modal-dialog-centered">
@@ -261,6 +263,7 @@ module.exports = {
       <script>
       $('#form').submit(function(e){
         e.preventDefault();
+        Document.getElementsByTagName
         $('#loaderModal').modal('show')
         $.ajax({
           url: '/o/create_process',
