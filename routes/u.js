@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var template = require('../lib/template');
+var template = require('../components/template');
 var db = require('../lib/db');
 var fs = require('fs');
 const bcrypt = require('bcrypt');

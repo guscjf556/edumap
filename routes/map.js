@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var template = require('../lib/template.js');
+var template = require('../components/template.js');
 const auth = require('../lib/auth');
 const db = require('../lib/db');
 const mapMarker =require('../lib/mapMaker');

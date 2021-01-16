@@ -33,7 +33,7 @@ router.get("/user", (req, res) => {
     return false;
   }
   db.query(
-    "SELECT * FROM topic WHERE topic.user_id = ? ",
+    "SELECT * FROM topic WHERE topic.userID = ? ",
     [req.user.id],
     function (err, result) {
       if (err) throw err;
@@ -64,6 +64,22 @@ router.get("/", (req, res) => {
     var html = template.HTML(body, auth.StatusUI(req, res));
     res.send(html);
   });
+});
+
+// 상세보기
+router.get("/:postId", (req, res) => {
+  const postId = req.params.postId;
+  console.log(postId);
+  db.query(
+    "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
+    [postId],
+    (err, result) => {
+      console.log(result);
+      const body = post(result, req, auth);
+      const html = template.HTML(body, auth.StatusUI(req, res));
+      res.send(html);
+    }
+  );
 });
 
 //생성
@@ -118,7 +134,7 @@ router.post("/create_process", image_array, function (req, res, next) {
     }
   }
   db.query(
-    "INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, user_id, Lat, Lng) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?)",
+    "INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, userID, Lat, Lng) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?)",
     [
       req.body.o_name,
       req.body.o_memo,
@@ -241,18 +257,5 @@ router.post("/delete", (req, res) => {
   res.redirect("/o");
 });
 
-// 상세보기
-router.get("/:pageId", (req, res) => {
-  var pageId = req.params.pageId;
-  db.query(
-    "SELECT * FROM topic LEFT JOIN user ON topic.user_id = user.id WHERE topic.id = ?",
-    [pageId],
-    (err, result) => {
-      const body = post(result, req, auth);
-      const html = template.HTML(body, auth.StatusUI(req, res));
-      res.send(html);
-    }
-  );
-});
 
 module.exports = router;
