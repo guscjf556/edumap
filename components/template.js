@@ -281,7 +281,7 @@ module.exports = {
   },
 
   //reise
-  revise: function (pageId,queryResult) {
+  revise: function (postId,queryResult) {
     let imgURI = [];
     for(let i = 1; i < 6; i++){
       let img = queryResult[0]["o_image_" + i];
@@ -357,7 +357,6 @@ module.exports = {
         <div class="card-text">
           <form action="/o/update_process" id="form" method="post" enctype="multipart/form-data">
             <input type="hidden" name="topic_id" value="${queryResult[0].id}">
-            <input type="hidden" name="user_id" value="${queryResult[0].user_id}">
             <div class="form-group">
               <label for="o_name" class="text-success">나무 이름</label>
               <input type="text" class="form-control" id="o_name" name="o_name" value="${queryResult[0].o_name}" aria-describedby="o_name_help" required>
@@ -398,7 +397,7 @@ module.exports = {
           </form>
           <!-- 삭제하기 폼 -->
           <form action="/o/delete" method="post">
-            <input type="hidden" name="o_id" value = "${pageId}">
+            <input type="hidden" name="o_id" value = "${postId}">
             <button type="button" class="btn btn-danger btn-sm d-block ml-auto my-3" onclick="showDeleteModal()">삭제하기</button>
             <!-- 삭제하기 경고 모달 -->
             <div class="modal fade" id="modal-deletePost" role="dialog" tabindex="-1">

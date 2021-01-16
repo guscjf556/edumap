@@ -1,7 +1,7 @@
 const mapMaker = require('../lib/mapMaker');
 
 const post = (dbQueryResult, req, auth) => {
-  const pageId = req.params.pageId
+  const postId = req.params.postId
   let str = "";
   let carouselContainer = ""
   var imageArray = Object.values(dbQueryResult[0]).slice(4, 9);
@@ -22,8 +22,8 @@ const post = (dbQueryResult, req, auth) => {
     <div class="container my-3">
     <div class="d-flex justify-content-between">
       <h1>${dbQueryResult[0].o_name}</h1>
-      <form action="/o/update/${pageId}" method="post">
-        <input type="hidden" class="form-control" id="o_id" name="o_id"  value="${pageId}">
+      <form action="/o/update/${postId}" method="post">
+        <input type="hidden" class="form-control" id="o_id" name="o_id"  value="${postId}">
         <input type="${auth.updateHide(req, dbQueryResult)}" class="btn btn-dark" value="수정하기">
       </form>
     </div>
@@ -40,7 +40,7 @@ const post = (dbQueryResult, req, auth) => {
         <div id="mapContainer">
         <h5>관찰 위치</h5>
         ${mapMaker.move(
-          "height:10rem;pointer-events: none",
+          "height:10rem",
           3,
           `${LatLng}`,
           `{
@@ -64,7 +64,7 @@ const post = (dbQueryResult, req, auth) => {
     })
     </script>
     <script>
-      if(${dbQueryResult[0].Lat}===0){
+      if(${dbQueryResult[0].Lat}==="0"){
       document.querySelector('#mapContainer').style.display="none"
       }
     </script>

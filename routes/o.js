@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var multer = require("multer");
-var template = require("../components/template.js");
+var template = require("../components/template");
 var fs = require("fs");
 var db = require("../lib/db");
 const mapMaker = require("../lib/mapMaker");
@@ -13,8 +13,8 @@ const post = require('../components/post');
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    !fs.existsSync(`public/images/${req.user.id}`) && fs.mkdirSync(`public/images/${req.user.id}`);
-    cb(null, `public/images/${req.user.id}`);
+    !fs.existsSync(`public/images/${req.user.userID}`) && fs.mkdirSync(`public/images/${req.user.userID}`);
+    cb(null, `public/images/${req.user.userID}`);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "_" + file.originalname);
@@ -34,7 +34,7 @@ router.get("/user", (req, res) => {
   }
   db.query(
     "SELECT * FROM topic WHERE topic.userID = ? ",
-    [req.user.id],
+    [req.user.userID],
     function (err, result) {
       if (err) throw err;
       const body = newsFeed(result);
@@ -66,25 +66,8 @@ router.get("/", (req, res) => {
   });
 });
 
-// 상세보기
-router.get("/:postId", (req, res) => {
-  const postId = req.params.postId;
-  console.log(postId);
-  db.query(
-    "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
-    [postId],
-    (err, result) => {
-      console.log(result);
-      const body = post(result, req, auth);
-      const html = template.HTML(body, auth.StatusUI(req, res));
-      res.send(html);
-    }
-  );
-});
-
 //생성
 router.get("/create", (req, res) => {
-  
   if (!auth.IsOwner(req, res)) {
     res.redirect("/o");
     return false;
@@ -104,7 +87,7 @@ let image_array = upload.fields([
 router.post("/create_process", image_array, function (req, res, next) {
   //현철: 비동기이고, 압축이 시간이 걸려서 앞으로 빼놨고 압축이 끝나면 /o로 리다이렉트 되게 했습니다.
   (async() => {
-    !fs.existsSync(`public/compressed-images/${req.user.id}`) && fs.mkdirSync(`public/compressed-images/${req.user.id}`);
+    !fs.existsSync(`public/compressed-images/${req.user.userID}`) && fs.mkdirSync(`public/compressed-images/${req.user.userID}`);
     for(let i = 0; i<5; i++){
       if(req.files[`o_image_${i+1}`]===undefined){
         continue;
@@ -116,7 +99,7 @@ router.post("/create_process", image_array, function (req, res, next) {
           background: { r: 255, g: 255, b: 255, alpha: 1 }
         })
         .withMetadata()
-        .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i + 1}`][0].filename}`)
+        .toFile(`public/compressed-images/${req.user.userID}/${req.files[`o_image_${i + 1}`][0].filename}`)
         fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {
           if(err)throw err;
         })
@@ -129,7 +112,7 @@ router.post("/create_process", image_array, function (req, res, next) {
       images.push(null);
     } else {
       //현철: 여기도 임의로 경로를 수정했습니다.
-      var imagePath = `compressed-images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
+      var imagePath = `compressed-images/${req.user.userID}/${req.files[`o_image_${i}`][0].filename}`
       images.push(imagePath);
     }
   }
@@ -144,7 +127,7 @@ router.post("/create_process", image_array, function (req, res, next) {
       images[2],
       images[3],
       images[4],
-      req.user.id,
+      req.user.userID,
       req.body.Lat,
       req.body.Lng,
     ],
@@ -155,10 +138,10 @@ router.post("/create_process", image_array, function (req, res, next) {
 });
 
 //  글 수정하기
-router.post("/update/:pageId", (req, res) => {
-  var pageId = req.params.pageId;
-  db.query("SELECT * FROM topic WHERE id=?", [pageId], function (err, result) {
-    var html = template.HTML(template.revise(pageId, result), auth.StatusUI(req, res));
+router.post("/update/:postId", (req, res) => {
+  var postId = req.params.postId;
+  db.query("SELECT * FROM topic WHERE id=?", [postId], function (err, result) {
+    var html = template.HTML(template.revise(postId, result), auth.StatusUI(req, res));
     res.send(html);
   });
 });
@@ -179,7 +162,7 @@ router.post("/update_process", image_array, (req, res, next) => {
           background : {r:255, g:255, b:255, alpha: 1}
         })
         .withMetadata()
-        .toFile(`public/compressed-images/${req.user.id}/${req.files[`o_image_${i+1}`][0].filename}`);
+        .toFile(`public/compressed-images/${req.user.userID}/${req.files[`o_image_${i+1}`][0].filename}`);
         fs.unlink(req.files[`o_image_${i+1}`][0].path, (err) => {
           if(err)throw err;
         })
@@ -193,7 +176,7 @@ router.post("/update_process", image_array, (req, res, next) => {
     if (req.files[`o_image_${i}`] == undefined) {
       images.push(null);
     } else {
-      var imagePath = `compressed-images/${req.user.id}/${req.files[`o_image_${i}`][0].filename}`
+      var imagePath = `compressed-images/${req.user.userID}/${req.files[`o_image_${i}`][0].filename}`
       images.push(imagePath);
     }
   }
@@ -257,5 +240,21 @@ router.post("/delete", (req, res) => {
   res.redirect("/o");
 });
 
+
+// 상세보기
+// 이게 다른 것보다 앞에 있으면 문자열이 postId 변수로 들어가 오류를 일으키는구나...
+router.get("/:postId", (req, res) => {
+  const postId = req.params.postId;
+  console.log(postId);
+  db.query(
+    "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
+    [postId],
+    (err, result) => {
+      const body = post(result, req, auth);
+      const html = template.HTML(body, auth.StatusUI(req, res));
+      res.send(html);
+    }
+  );
+});
 
 module.exports = router;
