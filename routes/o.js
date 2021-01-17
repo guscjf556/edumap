@@ -263,12 +263,13 @@ router.get("/:postId", (req, res) => {
 });
 
 router.post("/comment-process/:postID", (req, res) => {
-  const postID = req.params.postID;
+  const postID = parseInt(req.params.postID);
   const userID = req.user.userID;
   const content = req.body.commentContent;
   db.query("INSERT INTO Comments (PostID, CommentUserID, Content) VALUE (?, ?, ?)", [postID, userID, content], (err, result) => {
     if (err) throw err;
-    db.query("SELECT FROM Comments WHERE postID = ?", [postID], (err, comments) => {
+    db.query("SELECT * FROM Comments WHERE postID = ?", [postID], (err, comments) => {
+      if (err) throw err;
       //debug
       console.log("comment-process: ", comments)
       res.send(comments);
