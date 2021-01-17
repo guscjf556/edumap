@@ -235,6 +235,7 @@ router.post("/delete", (req, res) => {
         function (err, result) {
           if (err) throw err;
         };
+        db.query("DELETE FROM Comments WHERE PostID = ?", [req.body.o_id], (err, result) => {if (err) throw err});
     }
   );
   res.redirect("/o");
@@ -246,7 +247,7 @@ router.post("/delete", (req, res) => {
 router.get("/:postId", (req, res) => {
   const postId = req.params.postId;
   db.query(
-    "SELECT * FROM Comments WHERE postID = ?", [postId], (err, commentsData) => {
+    "SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE postID = ?", [postId], (err, commentsData) => {
       //debug
       console.log("상세보기 commentsData: ", commentsData);
       db.query(
@@ -268,8 +269,11 @@ router.post("/comment-process/:postID", (req, res) => {
   const content = req.body.commentContent;
   db.query("INSERT INTO Comments (PostID, CommentUserID, Content) VALUE (?, ?, ?)", [postID, userID, content], (err, result) => {
     if (err) throw err;
-    db.query("SELECT * FROM Comments WHERE postID = ?", [postID], (err, comments) => {
+    db.query("SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE postID = ?", [postID], (err, comments) => {
       if (err) throw err;
+      for(let i = 0; i < comments.length; i++){
+        comments[i].Created = comments[i].Created.toLocaleString('ko-KR');
+      }
       //debug
       console.log("comment-process: ", comments)
       res.send(comments);

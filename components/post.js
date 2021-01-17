@@ -40,10 +40,22 @@ const post = (dbQueryResult, commentsData, req, auth) => {
           ${carouselContainer}
         </div>
       </div>
-      <br />
+      <br>
+    </div>
       <div class ="col">
         <h4>${dbQueryResult[0].displayName} <small class="text-muted">${dbQueryResult[0].description}</small></h4>
         <p>${date}</p>
+        <div id="commentWrapper">
+        <div id="comments">
+          ${comments(commentsData)}
+        </div>
+        <form class="row"id="form" >
+          <textarea class="form-control col-10" id="commentContent" name="commentContent" rows="1"></textarea>
+          <input class="form-control d-none" id="submit" type="submit" value="게시">
+          <label for="submit" class="form-label col-2 align-middle">게시</label>
+        </form>
+      </div>
+      <br>
         <div id="mapContainer">
         <h5>관찰 위치</h5>
         ${mapMaker.move(
@@ -56,17 +68,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
       }`
         )}
         </div>
-        <div id="commentWrapper">
-            <form id="form" >
-              <textarea class="form-control" id="commentContent" name="commentContent" rows="3"></textarea>
-              <input type="submit" value="댓글쓰기">
-            </form>
-            <div id="comments">
-              ${comments(commentsData)}
-            </div>
-          </div>
       </div>
-    </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>      
       <script>
@@ -84,15 +86,19 @@ const post = (dbQueryResult, commentsData, req, auth) => {
             for(let i = 0; i < updatedCommentsData.length; i++){
               render += 
               '<span class="badge badge-dark">' + 
-              updatedCommentsData[i].CommentUserID +
+              updatedCommentsData[i].displayName +
               '</span> ' + 
               '<span>' +
               updatedCommentsData[i].Content +                
-              '</span><br>'
+              '</span><br>' +
+              '<span><small>' +
+              updatedCommentsData[i].Created.toLocaleString("ko-KR") +
+              '</small></span><br>'                
             };
             //debug
             console.log("commentsComponentsRender: ", render);
             $('#comments').html(render);
+            $('#commentContent').html("");
           },
         });
       });
