@@ -245,16 +245,35 @@ router.post("/delete", (req, res) => {
 // 이게 다른 것보다 앞에 있으면 문자열이 postId 변수로 들어가 오류를 일으키는구나...
 router.get("/:postId", (req, res) => {
   const postId = req.params.postId;
-  console.log(postId);
   db.query(
-    "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
-    [postId],
-    (err, result) => {
-      const body = post(result, req, auth);
-      const html = template.HTML(body, auth.StatusUI(req, res));
-      res.send(html);
+    "SELECT * FROM Comments WHERE postID = ?", [postId], (err, commentsData) => {
+      //debug
+      console.log("상세보기 commentsData: ", commentsData);
+      db.query(
+        "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
+        [postId],
+        (err, postData) => {
+          const body = post(postData, commentsData, req, auth);
+          const html = template.HTML(body, auth.StatusUI(req, res));
+          res.send(html);
+        }
+      );
     }
-  );
+  )
 });
+
+router.post("/comment-process/:postID", (req, res) => {
+  const postID = req.params.postID;
+  const userID = req.user.userID;
+  const content = req.body.commentContent;
+  db.query("INSERT INTO Comments (PostID, CommentUserID, Content) VALUE (?, ?, ?)", [postID, userID, content], (err, result) => {
+    if (err) throw err;
+    db.query("SELECT FROM Comments WHERE postID = ?", [postID], (err, comments) => {
+      //debug
+      console.log("comment-process: ", comments)
+      res.send(comments);
+    })
+  });
+})
 
 module.exports = router;

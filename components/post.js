@@ -1,7 +1,11 @@
 const mapMaker = require('../lib/mapMaker');
+const comments = require('../components/comments');
 
-const post = (dbQueryResult, req, auth) => {
+const post = (dbQueryResult, commentsData, req, auth) => {
+  //debug
+  console.log("postComponent: ", commentsData);
   const postId = req.params.postId
+  //캐러셀
   let str = "";
   let carouselContainer = ""
   var imageArray = Object.values(dbQueryResult[0]).slice(4, 9);
@@ -12,12 +16,15 @@ const post = (dbQueryResult, req, auth) => {
       carouselContainer += `<div class="item"><img src="/${imageArray[i]}"></div>`
     }
   }
+
+  //날짜 형식
   var date = dbQueryResult[0].created.toLocaleDateString('ko-KR');
   var koreanDate = ["년 ", "월 ", "일"];
       for (var i = 0; i < 3; i++) {
         date = date.replace(".", koreanDate[i]);
       }
   const LatLng = `${dbQueryResult[0].Lat},${dbQueryResult[0].Lng}`;
+
   const render = `
     <div class="container my-3">
     <div class="d-flex justify-content-between">
@@ -49,11 +56,35 @@ const post = (dbQueryResult, req, auth) => {
       }`
         )}
         </div>
+        <div id="commentWrapper">
+            <form id="form" >
+              <textarea class="form-control" id="commentContent" name="commentContent" rows="3"></textarea>
+              <input type="submit" value="댓글쓰기">
+            </form>
+            <div id="comments">
+              ${comments(commentsData)}
+            </div>
+          </div>
       </div>
     </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>      
+      <script>
+      !${auth.IsOwner(req)} && document.querySelector('#form').classList.add("d-none");
+
+      $('#form').submit(function(e){
+        e.preventDefault();
+        $.ajax({
+          url: '/o/comment-process/${postId}',
+          type: 'post',
+          data: $(this).serializeArray(),
+          success: function(updatedComments){
+            $('#comments').html(JSON.stringify(updatedComments));
+          }
+        })
+      })
     <!-- owl.carousel 작동 코드 -->
-    <script src="/jquery/jquery.min.js"></script>
+    //<script src="/jquery/jquery.min.js"></script>
     <script src="/owlcarousel/owl.carousel.min.js"></script>
     <script>
     $('.owl-carousel').owlCarousel({
