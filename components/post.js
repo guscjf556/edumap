@@ -78,11 +78,24 @@ const post = (dbQueryResult, commentsData, req, auth) => {
           url: '/o/comment-process/${postId}',
           type: 'post',
           data: $(this).serializeArray(),
-          success: function(updatedComments){
-            $('#comments').html(JSON.stringify(updatedComments));
-          }
-        })
-      })
+          success: function(updatedCommentsData){
+            console.log("updatedCommentsData: ", updatedCommentsData);
+            let render = "";
+            for(let i = 0; i < updatedCommentsData.length; i++){
+              render += 
+              '<span class="badge badge-dark">' + 
+              updatedCommentsData[i].CommentUserID +
+              '</span> ' + 
+              '<span>' +
+              updatedCommentsData[i].Content +                
+              '</span><br>'
+            };
+            //debug
+            console.log("commentsComponentsRender: ", render);
+            $('#comments').html(render);
+          },
+        });
+      });
     <!-- owl.carousel 작동 코드 -->
     //<script src="/jquery/jquery.min.js"></script>
     <script src="/owlcarousel/owl.carousel.min.js"></script>
