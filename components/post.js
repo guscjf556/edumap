@@ -52,7 +52,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
         <form class="row"id="form" >
           <textarea class="form-control col-10" id="commentContent" name="commentContent" rows="1"></textarea>
           <input class="form-control d-none" id="submit" type="submit" value="게시">
-          <label for="submit" class="form-label col-2 align-middle">게시</label>
+          <label for="submit" style="margin-top:.5rem;margin-bottom:.5rem;" class="form-label col-2 align-middle">게시</label>
         </form>
       </div>
       <br>
