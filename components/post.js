@@ -49,7 +49,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
         <div id="comments">
           ${comments(commentsData)}
         </div>
-        <form class="row"id="form" >
+        <form class="row" id="form" >
           <textarea class="form-control col-10" id="commentContent" name="commentContent" rows="1"></textarea>
           <input class="form-control d-none" id="submit" type="submit" value="게시">
           <label for="submit" style="margin-top:.5rem;margin-bottom:.5rem;" class="form-label col-2 align-middle">게시</label>
@@ -98,7 +98,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
             //debug
             console.log("commentsComponentsRender: ", render);
             $('#comments').html(render);
-            $('#commentContent').html("");
+            $('#commentContent').val("");
           },
         });
       });
