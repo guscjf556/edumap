@@ -38,14 +38,7 @@ module.exports = {
                   <a class="nav-link" href="/map">지도</a>
                 </li>
                 <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    내정보
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="/o/user">내가 올린 사진</a>
-                    <a class="dropdown-item" href="/map/user">내가 만든 지도</a>
-                  </div>
-                    ${authStatusUI}
+                  ${authStatusUI}
                 </li>
               </ul>
             </div>
