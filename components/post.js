@@ -27,8 +27,8 @@ const post = (dbQueryResult, commentsData, req, auth) => {
 
   const render = `
     <div class="container my-3">
-      <div class="row">
-        <div class = "col-12">
+      <div class="row row-cols-1 row-cols-md-2">
+        <div class = "col my-3">
           <div class="d-flex justify-content-between">
             <h1>${dbQueryResult[0].o_name}</h1>
             <form action="/o/update/${postId}" method="post">
@@ -39,8 +39,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
           <div class="owl-carousel owl-theme">
             ${carouselContainer}
           </div>
-          <br>
-          <div>
+          <div class="mt-3">
             <h4>${dbQueryResult[0].displayName} <small class="text-muted">${dbQueryResult[0].description}</small></h4>
             <p>${date}</p>
           </div>
@@ -48,14 +47,15 @@ const post = (dbQueryResult, commentsData, req, auth) => {
             <div id="comments">
               ${comments(commentsData, req)}
             </div>
-            <form class="row" id="form" >
-              <textarea class="form-control col-10" id="commentContent" name="commentContent" rows="1"></textarea>
-              <input class="form-control d-none" id="submit" type="submit" value="게시">
-              <label for="submit" style="margin-top:.5rem;margin-bottom:.5rem;" class="form-label col-2 align-middle">게시</label>
+          </div>
+          <div class="container">
+            <form id="form" class="row">
+            <textarea class="form-control col-9" id="commentContent" name="commentContent" rows="1" required></textarea>
+              <input class="form-control col-3" id="submit" type="submit" value="게시">
             </form>
           </div>
         </div>
-        <div class="col-12 my-3">
+        <div class="col">
           <h5>관찰 위치</h5>
           ${mapMaker.move(
             "height:10rem",
