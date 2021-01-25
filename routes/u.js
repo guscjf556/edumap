@@ -138,7 +138,7 @@ router.post('/register_process', function (req, res, next) {
     bcrypt.hash(pwd, 10, function (err, hash){
       db.query('INSERT INTO user (email, pwd, displayName) VALUES(?, ?, ?)',[email, hash, displayName], function(err, result){
         if(err) throw err;
-        db.query('SELECT * FROM user ORDER BY id DESC LIMIT 1', function(err, result){
+        db.query('SELECT * FROM user ORDER BY userID DESC LIMIT 1', function(err, result){
           if(err) throw err;
           req.login(result[0], function(err){
             if(err) throw err;
