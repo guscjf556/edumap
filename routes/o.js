@@ -281,4 +281,12 @@ router.post("/comment-process/:postID", (req, res) => {
   });
 })
 
+router.post("/delete-comment-process/:comment_id", (req, res) => {
+  const comment_id = parseInt(req.params.comment_id);
+  db.query("DELETE FROM Comments WHERE comment_id=?", [comment_id], err => {
+    if(err) throw err;
+    res.send("success");
+  });
+})
+
 module.exports = router;

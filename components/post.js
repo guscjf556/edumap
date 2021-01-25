@@ -27,46 +27,45 @@ const post = (dbQueryResult, commentsData, req, auth) => {
 
   const render = `
     <div class="container my-3">
-    <div class="d-flex justify-content-between">
-      <h1>${dbQueryResult[0].o_name}</h1>
-      <form action="/o/update/${postId}" method="post">
-        <input type="hidden" class="form-control" id="o_id" name="o_id"  value="${postId}">
-        <input type="${auth.updateHide(req, dbQueryResult)}" class="btn btn-dark" value="수정하기">
-      </form>
-    </div>
-    <div class="row row-cols-1 row-cols-md-2">
-      <div class = "col">
-        <div class="owl-carousel owl-theme">
-          ${carouselContainer}
+      <div class="row">
+        <div class = "col-12">
+          <div class="d-flex justify-content-between">
+            <h1>${dbQueryResult[0].o_name}</h1>
+            <form action="/o/update/${postId}" method="post">
+              <input type="hidden" class="form-control" id="o_id" name="o_id"  value="${postId}">
+              <input type="${auth.updateHide(req, dbQueryResult)}" class="btn btn-dark" value="수정하기">
+            </form>
+          </div>
+          <div class="owl-carousel owl-theme">
+            ${carouselContainer}
+          </div>
+          <br>
+          <div>
+            <h4>${dbQueryResult[0].displayName} <small class="text-muted">${dbQueryResult[0].description}</small></h4>
+            <p>${date}</p>
+          </div>
+          <div id="commentWrapper">
+            <div id="comments">
+              ${comments(commentsData, req)}
+            </div>
+            <form class="row" id="form" >
+              <textarea class="form-control col-10" id="commentContent" name="commentContent" rows="1"></textarea>
+              <input class="form-control d-none" id="submit" type="submit" value="게시">
+              <label for="submit" style="margin-top:.5rem;margin-bottom:.5rem;" class="form-label col-2 align-middle">게시</label>
+            </form>
+          </div>
         </div>
-      </div>
-      <br>
-    </div>
-      <div class ="col">
-        <h4>${dbQueryResult[0].displayName} <small class="text-muted">${dbQueryResult[0].description}</small></h4>
-        <p>${date}</p>
-        <div id="commentWrapper">
-        <div id="comments">
-          ${comments(commentsData)}
-        </div>
-        <form class="row" id="form" >
-          <textarea class="form-control col-10" id="commentContent" name="commentContent" rows="1"></textarea>
-          <input class="form-control d-none" id="submit" type="submit" value="게시">
-          <label for="submit" style="margin-top:.5rem;margin-bottom:.5rem;" class="form-label col-2 align-middle">게시</label>
-        </form>
-      </div>
-      <br>
-        <div id="mapContainer">
-        <h5>관찰 위치</h5>
-        ${mapMaker.move(
-          "height:10rem",
-          3,
-          `${LatLng}`,
-          `{
-          content: '<div><a href="/o/${dbQueryResult[0].id}" target = "_blank">${dbQueryResult[0].o_name}</a></div>', 
-          latlng: new kakao.maps.LatLng(${dbQueryResult[0].Lat}, ${dbQueryResult[0].Lng})
-      }`
-        )}
+        <div class="col-12 my-3">
+          <h5>관찰 위치</h5>
+          ${mapMaker.move(
+            "height:10rem",
+            3,
+            `${LatLng}`,
+            `{
+            content: '<div><a href="/o/${dbQueryResult[0].id}" target = "_blank">${dbQueryResult[0].o_name}</a></div>', 
+            latlng: new kakao.maps.LatLng(${dbQueryResult[0].Lat}, ${dbQueryResult[0].Lng})
+            }`
+          )}
         </div>
       </div>
     </div>
@@ -80,25 +79,8 @@ const post = (dbQueryResult, commentsData, req, auth) => {
           url: '/o/comment-process/${postId}',
           type: 'post',
           data: $(this).serializeArray(),
-          success: function(updatedCommentsData){
-            console.log("updatedCommentsData: ", updatedCommentsData);
-            let render = "";
-            for(let i = 0; i < updatedCommentsData.length; i++){
-              render += 
-              '<span class="badge badge-dark">' + 
-              updatedCommentsData[i].displayName +
-              '</span> ' + 
-              '<span>' +
-              updatedCommentsData[i].Content +                
-              '</span><br>' +
-              '<span><small>' +
-              updatedCommentsData[i].Created.toLocaleString("ko-KR") +
-              '</small></span><br>'                
-            };
-            //debug
-            console.log("commentsComponentsRender: ", render);
-            $('#comments').html(render);
-            $('#commentContent').val("");
+          success: function(){
+            location.reload();
           },
         });
       });
