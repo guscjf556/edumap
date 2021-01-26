@@ -26,6 +26,11 @@ module.exports = {
         <nav class="navbar navbar-expand-lg navbar-dark bg-success">
           <div class="container">
             <a class="navbar-brand" href="/o" style="font-family:Arvo"><img src="/icon/plant_image.png" style="width:2rem;heigth:2rem"> school plant</a>
+            <button type="button" class="btn btn-sm btn-primary d-inline-block fw-bolder" onclick="showModal();">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-plus text-light" viewBox="0 0 16 16">
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+            관찰올리기
+            </button>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -42,11 +47,6 @@ module.exports = {
                 </li>
               </ul>
             </div>
-            <button type="button" class="btn btn-sm btn-primary d-none d-lg-inline-block fw-bolder" onclick="showModal();">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-plus text-light" viewBox="0 0 16 16">
-              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-              관찰올리기
-            </button>
           </div>
         </nav>
         <main>
