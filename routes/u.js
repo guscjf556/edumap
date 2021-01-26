@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var template = require('../components/template');
-var db = require('../lib/db');
-var fs = require('fs');
+const express = require('express');
+const router = express.Router();
+const template = require('../components/template');
+const db = require('../lib/db');
+const fs = require('fs');
 const bcrypt = require('bcrypt');
+const profile = require('../components/profile');
+
 module.exports = function(passport){
 
 //로그인 화면
@@ -41,11 +43,13 @@ router.get('/login', function(req, res) {
 });
 
 //passport가 로그인을 처리하는 과정
-router.post('/login_process',
+router.post('/login_process', (req, res) => {
+  console.log(req.cookies);
   passport.authenticate('local', { 
-    successRedirect: '/o',
+    successRedirect: `/o/${req.cookies.lastURL}`,
     failureRedirect: '/u/login', 
-    failureFlash: true}));
+    failureFlash: true});
+});
 
 // 회원가입
 router.get('/register', function(req, res) {
@@ -158,5 +162,21 @@ router.get('/logout', (req, res) => {
 
   return router;
 }
+
+router.get('/profile', (req, res) => {
+  const userInfo = req.user;
+  const html = template.HTML(profile(userInfo));
+  res.send(html);
+})
+
+router.post('/nickname-change-process', (req, res) => {
+  const newNickname = req.body.nickname;
+  //bebug
+  console.log(newNickname); 
+  db.query("UPDATE user SET displayName = ? WHERE userID = 1", [newNickname], (err) => {
+    if(err) throw err;
+  })
+  res.redirect('/u/profile');
+})
 
   
