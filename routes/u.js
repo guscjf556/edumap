@@ -123,8 +123,7 @@ router.get('/register', function(req, res) {
 //회원가입 과정 각종 검증이 필요하다.(ex. email들어가서 인증을 받아야 권한 풀어주기, 중복되는 아이디 있는가 검증)
 router.post('/register_process', function (req, res, next) {
   fs.writeFile('test.txt', req.body.email, function(err){
-    if (err) return console.log(err);
-    console.log(req.body);
+    if (err) throw err;
   });
   var email =req.body.email;
   var pwd = req.body.pwd;

@@ -39,8 +39,7 @@ const comments = (commentsData, req) => {
     }
   </script>
   `
-  //debug
-  console.log("commentsComponentsRender: ", render);
+
   return render;
 }
 

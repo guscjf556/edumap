@@ -2,8 +2,6 @@ const mapMaker = require('../lib/mapMaker');
 const comments = require('../components/comments');
 
 const post = (dbQueryResult, commentsData, req, auth) => {
-  //debug
-  console.log("postComponent: ", commentsData);
   const postId = req.params.postId
   //캐러셀
   let str = "";

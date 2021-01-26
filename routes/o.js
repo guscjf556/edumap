@@ -248,8 +248,6 @@ router.get("/:postId", (req, res) => {
   const postId = req.params.postId;
   db.query(
     "SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE postID = ?", [postId], (err, commentsData) => {
-      //debug
-      console.log("상세보기 commentsData: ", commentsData);
       db.query(
         "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
         [postId],
@@ -274,8 +272,6 @@ router.post("/comment-process/:postID", (req, res) => {
       for(let i = 0; i < comments.length; i++){
         comments[i].Created = comments[i].Created.toLocaleString('ko-KR');
       }
-      //debug
-      console.log("comment-process: ", comments)
       res.send(comments);
     })
   });
