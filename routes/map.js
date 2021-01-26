@@ -36,7 +36,7 @@ router.get('/user', (req,res)=>{
       res.redirect('/o/notLogin');
       return false;
     }
-  db.query('SELECT id, o_name, Lat, Lng FROM topic WHERE user_id = ?',[req.user.id], (err, result)=>{
+  db.query('SELECT id, o_name, Lat, Lng FROM topic WHERE userID = ?',[req.user.userID], (err, result)=>{
     if(err)throw err
     var position = [];
     for(var i =0; i<result.length; i++){

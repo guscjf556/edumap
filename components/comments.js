@@ -3,8 +3,8 @@ const comments = (commentsData, req) => {
   for(let i = 0; i < commentsData.length; i++){
     render += `
     <div class="row" id="${commentsData[i].comment_id}">
-      <div class="col-2"><span class="badge badge-dark">${commentsData[i].displayName}</span></div>
-      <div class="col-8 text-break">
+      <div class="col-3 text-break"><span class="badge badge-dark">${commentsData[i].displayName}</span></div>
+      <div class="col-7 text-break">
         <div>${commentsData[i].Content}</div>
         <div><small>${commentsData[i].Created.toLocaleString("ko-KR")}</small></div>
       </div> 
