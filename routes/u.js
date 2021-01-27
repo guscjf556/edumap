@@ -5,6 +5,9 @@ const db = require('../lib/db');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const profile = require('../components/profile');
+const createProject = require('../components/createProject');
+const joinProject = require('../components/joinProject');
+const { dequeue } = require('jquery');
 
 module.exports = function(passport){
 
@@ -44,9 +47,8 @@ router.get('/login', function(req, res) {
 
 //passport가 로그인을 처리하는 과정
 router.post('/login_process', (req, res) => {
-  console.log(req.cookies);
   passport.authenticate('local', { 
-    successRedirect: `/o/${req.cookies.lastURL}`,
+    successRedirect: `/o`,
     failureRedirect: '/u/login', 
     failureFlash: true});
 });
@@ -165,18 +167,78 @@ router.get('/logout', (req, res) => {
 
 router.get('/profile', (req, res) => {
   const userInfo = req.user;
-  const html = template.HTML(profile(userInfo));
-  res.send(html);
-})
+  db.query("SELECT project_id FROM projects_members WHERE user_id = ?", [userInfo.userID], (err, result) => {
+    if(err) throw err;
+    if(result[0]){
+      let userProjectIds = [];
+      result.forEach(row => userProjectIds.push(row.project_id));
+      db.query("SELECT project_id, project_manager, project_title FROM projects WHERE project_id IN (?)", [userProjectIds], (err, result) => {
+        if(err) throw err;
+        const userProjectsInfo = result; 
+        const html = template.HTML(profile(userInfo, userProjectsInfo));
+        res.send(html);
+      });
+    }
+    else {
+      const html = template.HTML(profile(userInfo));
+      res.send(html);
+    }
+  });
+});
 
 router.post('/nickname-change-process', (req, res) => {
   const newNickname = req.body.nickname;
-  //bebug
-  console.log(newNickname); 
   db.query("UPDATE user SET displayName = ? WHERE userID = 1", [newNickname], (err) => {
     if(err) throw err;
   })
   res.redirect('/u/profile');
 })
 
+router.get('/create-project', (req, res) => {
+  if(!req.user){
+    res.redirect('/o');
+  }
+  else{
+    res.send(template.HTML(createProject));
+  }
+})
   
+router.post('/create-project-process', (req, res) => {
+  const projectTitle = req.body.projectTitle;
+  const projectPasscode = req.body.projectPasscode;
+  db.query("INSERT INTO projects (project_manager, project_title, project_passcode) VALUES (?, ?, ?)", [req.user.userID, projectTitle, projectPasscode], (err) => {
+    if(err) throw err;
+    res.redirect('/u/profile');
+  })
+})
+
+router.get('/join-project', (req, res) => {
+  if(!req.user){
+    res.redirect('/o');
+  }
+  else{
+    res.send(template.HTML(joinProject));
+  }
+})
+
+router.post('/join-project-process', (req, res) => {
+  const projectPasscode = req.body.projectPasscode;
+  db.query("SELECT project_id FROM projects WHERE project_passcode = ?", [projectPasscode], (err, result) => {
+    if(err) throw err;
+    const projectId = result[0].project_id;
+    db.query("INSERT INTO projects_members (project_id, user_id) VALUES (?, ?)", [projectId, req.user.userID], (err) => {
+      if(err) {
+        console.log(err);
+      }
+      res.redirect('/u/profile');
+    })
+  })
+});
+
+router.post('/quit-project-process/:projectId', (req, res) => {
+  const projectId = req.params.projectId;
+  db.query("DELETE FROM projects_members WHERE project_id = ? AND user_id = ?", [projectId, req.user.userID], (err) => {
+    if(err) throw err;
+    res.redirect('/u/profile');
+  });
+})
