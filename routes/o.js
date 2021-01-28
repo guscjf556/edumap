@@ -8,7 +8,9 @@ const mapMaker = require("../lib/mapMaker");
 const sharp = require('sharp');
 const newsFeed = require('../components/newsFeed');
 const post = require('../components/post');
-
+const profile = require('../components/profile');
+const createProject = require('../components/createProject');
+const joinProject = require('../components/joinProject');
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
@@ -72,8 +74,12 @@ router.get("/create", (req, res) => {
     res.redirect("/o");
     return false;
   }
-  const html = template.HTML(template.create(), auth.StatusUI(req, res));
-  res.send(html);
+  db.query("SELECT projects.project_id, projects.project_title FROM projects LEFT JOIN projects_members ON projects.project_id = projects_members.project_id WHERE projects_members.user_id = ?", [req.user.userID], (err, result) => {
+    const projectsIJoined = result;
+    const html = template.HTML(template.create(projectsIJoined), auth.StatusUI(req, res));
+    res.send(html);
+  })
+  
 });
 
 //생성_과정
@@ -117,7 +123,7 @@ router.post("/create_process", image_array, function (req, res, next) {
     }
   }
   db.query(
-    "INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, userID, Lat, Lng) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?)",
+    "INSERT INTO topic (o_name, description, created, o_image_1, o_image_2, o_image_3, o_image_4, o_image_5, userID, Lat, Lng, project_id) VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?, ?, ?, ?)",
     [
       req.body.o_name,
       req.body.o_memo,
@@ -130,6 +136,7 @@ router.post("/create_process", image_array, function (req, res, next) {
       req.user.userID,
       req.body.Lat,
       req.body.Lng,
+      req.body.project_id
     ],
     function (err, result) {
       if (err) throw err;
@@ -189,15 +196,16 @@ router.post("/update_process", image_array, (req, res, next) => {
         images[i] = imgPath[i];
       }
     }
-    var revisedPost = req.body;
-    var o_name = revisedPost.o_name;
-    var description = revisedPost.o_memo;
-    var created = revisedPost.o_time;
-    var Lat = revisedPost.Lat;
-    var Lng = revisedPost.Lng;
-    var topic_id = revisedPost.topic_id;
+    const revisedPost = req.body;
+    const o_name = revisedPost.o_name;
+    const description = revisedPost.o_memo;
+    const created = revisedPost.o_time;
+    const Lat = revisedPost.Lat;
+    const Lng = revisedPost.Lng;
+    const topic_id = revisedPost.topic_id;
+    const project_id = revisedPost.project_id;
     db.query(
-      "UPDATE topic SET o_name = ? , description = ?,  created = ?, o_image_1 = ?, o_image_2= ?, o_image_3 = ?, o_image_4 = ?, o_image_5 = ?, Lat = ?, Lng = ? WHERE id = ?",
+      "UPDATE topic SET o_name = ? , description = ?,  created = ?, o_image_1 = ?, o_image_2= ?, o_image_3 = ?, o_image_4 = ?, o_image_5 = ?, Lat = ?, Lng = ?, project_id = ? WHERE id = ?",
       [
         o_name, 
         description, 
@@ -209,6 +217,7 @@ router.post("/update_process", image_array, (req, res, next) => {
         images[4],
         Lat,
         Lng,
+        project_id,
         topic_id
       ],
       (err, result) => {
@@ -244,7 +253,7 @@ router.post("/delete", (req, res) => {
 
 // 상세보기
 // 이게 다른 것보다 앞에 있으면 문자열이 postId 변수로 들어가 오류를 일으키는구나...
-router.get("/:postId", (req, res) => {
+router.get("/post/:postId", (req, res) => {
   const postId = req.params.postId;
   db.query(
     "SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE postID = ?", [postId], (err, commentsData) => {
@@ -284,5 +293,110 @@ router.post("/delete-comment-process/:comment_id", (req, res) => {
     res.send("success");
   });
 })
+
+//프로필 페이지
+router.get('/profile', (req, res) => {
+  if(!req.user){
+    res.redirect("/o");
+    return
+  }
+  const userInfo = req.user;
+  db.query("SELECT project_id, project_title FROM projects WHERE project_manager = ?", [req.user.userID], (err, result) => {
+    const myProjectsInfo = result ? result : null;
+    let userProjectsInfo;
+    db.query("SELECT project_id FROM projects_members WHERE user_id = ?", [userInfo.userID], (err, result) => {
+      if(err) throw err;
+      if(result[0]){
+        let userProjectIds = [];
+        result.forEach(row => userProjectIds.push(row.project_id));
+        db.query("SELECT projects.project_id, projects.project_manager, projects.project_title, user.displayName FROM projects LEFT JOIN user ON projects.project_manager = user.userID WHERE projects.project_id IN (?)", [userProjectIds], (err, result) => {
+          if(err) throw err;
+          userProjectsInfo = result;
+          const html = template.HTML(profile(userInfo, myProjectsInfo, userProjectsInfo),auth.StatusUI(req, res));
+          res.send(html);
+        });
+      }
+      else {
+        const html = template.HTML(profile(userInfo, myProjectsInfo, userProjectsInfo),auth.StatusUI(req, res));
+        res.send(html);
+      };
+    });  
+  });
+});
+
+router.post('/nickname-change-process', (req, res) => {
+  const newNickname = req.body.nickname;
+  db.query("UPDATE user SET displayName = ? WHERE userID = 1", [newNickname], (err) => {
+    if(err) throw err;
+  })
+  res.redirect('/o/profile');
+})
+
+router.get('/create-project', (req, res) => {
+  if(!req.user){
+    res.redirect('/o/profile');
+  }
+  else{
+    res.send(template.HTML(createProject)),auth.StatusUI(req, res);
+  }
+})
+  
+router.post('/create-project-process', (req, res) => {
+  const projectTitle = req.body.projectTitle;
+  const projectPasscode = req.body.projectPasscode;
+  db.query("INSERT INTO projects (project_manager, project_title, project_passcode) VALUES (?, ?, ?)", [req.user.userID, projectTitle, projectPasscode], (err) => {
+    if(err) throw err;
+    db.query("SELECT project_id FROM projects WHERE project_passcode = ?", [projectPasscode], (err, result) => {
+      if(err) throw err;
+      const projectId = result[0].project_id;
+      db.query("INSERT INTO projects_members (project_id, user_id) VALUES (?, ?)", [projectId, req.user.userID], (err) => {
+        if(err) {
+          console.log(err);
+        }
+        res.redirect('/o/profile');
+      });
+    });
+  });
+});
+
+router.get('/join-project', (req, res) => {
+  if(!req.user){
+    res.redirect('/o/profile');
+  }
+  else{
+    res.send(template.HTML(joinProject),auth.StatusUI(req, res));
+  }
+})
+
+router.post('/join-project-process', (req, res) => {
+  const projectPasscode = req.body.projectPasscode;
+  db.query("SELECT project_id FROM projects WHERE project_passcode = ?", [projectPasscode], (err, result) => {
+    if(err) throw err;
+    const projectId = result[0].project_id;
+    db.query("INSERT INTO projects_members (project_id, user_id) VALUES (?, ?)", [projectId, req.user.userID], (err) => {
+      if(err) {
+        console.log(err);
+      }
+      res.redirect('/o/profile');
+    })
+  })
+});
+
+router.post('/quit-project-process/:projectId', (req, res) => {
+  const projectId = req.params.projectId;
+  db.query("DELETE FROM projects_members WHERE project_id = ? AND user_id = ?", [projectId, req.user.userID], (err) => {
+    if(err) throw err;
+    res.redirect('/o/profile');
+  });
+})
+
+router.get('/project/:projectId', (req, res) => {
+  const projectId = req.params.projectId;
+  db.query("SELECT * FROM topic WHERE project_id = ? ORDER BY id DESC", [projectId], (err, result) => {
+    const body = newsFeed(result);
+    var html = template.HTML(body, auth.StatusUI(req, res));
+    res.send(html);
+  });
+});
 
 module.exports = router;
