@@ -42,9 +42,7 @@ module.exports = {
                 <li class="nav-item" >
                   <a class="nav-link" href="/map">지도</a>
                 </li>
-                <li class="nav-item dropdown">
-                  ${authStatusUI}
-                </li>
+                ${authStatusUI}
               </ul>
             </div>
           </div>
@@ -95,7 +93,7 @@ module.exports = {
   },
 
   //create
-  create: function () {
+  create: function (projectsIJoined) {
     function imageFormMaker() {
       var imageForms = "";
       var categories = ["전체<small class='badge badge-success'>필수</small>", "잎", "꽃", "줄기", "열매"];
@@ -142,13 +140,38 @@ module.exports = {
       return previewBlocks;
     }
 
+    const selectFormMaker = (projectsIJoined) => {
+      let render = `
+      <select class="form-select" name="project_id" aria-label="Default select example">
+        <option value="" selected>없음</option>
+      `
+      if(projectsIJoined){
+        for(const project of projectsIJoined){
+          render += `
+          <option value="${project.project_id}">${project.displayName}</option>
+          `
+        } 
+      }
+
+      render += `
+      </select>
+      `
+
+      return render;
+    }
+
     return `
       <div class="container mt-5">
       <div class="card mx-auto w-80">
       <div class="card-body">
         <h4 class="card-title text-bold">관찰 정보</h4>
         <div class="card-text">
-          <form action = "/o/create_process" id="form" method = "post" enctype="multipart/form-data" >
+          <form action = "/o/create_process" id="form" method = "post" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="project_title" class="text-success">프로젝트 선택</label>
+              ${selectFormMaker(projectsIJoined)}
+              <small id="o_name_help" class="form-text text-muted">관찰을 올릴 프로젝트를 선택해주세요(필수X)</small>
+            </div>
             <div class="form-group">
               <label for="o_name" class="text-success">나무 이름</label>
               <input type="text" class="form-control" id="o_name" name="o_name" placeholder="자유이름" aria-describedby="o_name_help" required>
@@ -274,7 +297,7 @@ module.exports = {
   },
 
   //reise
-  revise: function (postId,queryResult) {
+  revise: function (postId,queryResult,projectsIJoined) {
     let imgURI = [];
     for(let i = 1; i < 6; i++){
       let img = queryResult[0]["o_image_" + i];
@@ -342,6 +365,26 @@ module.exports = {
       return previewBlocks;
     }
 
+    const selectFormMaker = (projectsIJoined) => {
+      let render = `
+      <select class="form-select" name="project_id" aria-label="Default select example">
+        <option value="" selected>없음</option>
+      `
+      if(projectsIJoined){
+        for(const project of projectsIJoined){
+          render += `
+          <option value="${project.project_id}">${project.project_title}</option>
+          `
+        } 
+      }
+
+      render += `
+      </select>
+      `
+
+      return render;
+    }
+
     return `
       <div class="container mt-5">
       <div class="card mx-auto w-80">
@@ -350,6 +393,11 @@ module.exports = {
         <div class="card-text">
           <form action="/o/update_process" id="form" method="post" enctype="multipart/form-data">
             <input type="hidden" name="topic_id" value="${queryResult[0].id}">
+            <div class="form-group">
+              <label for="project_title" class="text-success">프로젝트 선택</label>
+              ${selectFormMaker(projectsIJoined)}
+              <small id="o_name_help" class="form-text text-muted">관찰을 올릴 프로젝트를 선택해주세요(필수X)</small>
+            </div>
             <div class="form-group">
               <label for="o_name" class="text-success">나무 이름</label>
               <input type="text" class="form-control" id="o_name" name="o_name" value="${queryResult[0].o_name}" aria-describedby="o_name_help" required>
