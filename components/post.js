@@ -54,16 +54,18 @@ const post = (dbQueryResult, commentsData, req, auth) => {
           </div>
         </div>
         <div class="col">
+          <div id="mapContainer">
           <h5>관찰 위치</h5>
           ${mapMaker.move(
             "height:10rem",
             3,
             `${LatLng}`,
             `{
-            content: '<div><a href="/o/${dbQueryResult[0].id}" target = "_blank">${dbQueryResult[0].o_name}</a></div>', 
+            content: '<div><a href="/o/post/${dbQueryResult[0].id}" target = "_blank">${dbQueryResult[0].o_name}</a></div>', 
             latlng: new kakao.maps.LatLng(${dbQueryResult[0].Lat}, ${dbQueryResult[0].Lng})
             }`
           )}
+          </div>
         </div>
       </div>
     </div>
@@ -94,7 +96,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
     })
     </script>
     <script>
-      if(${dbQueryResult[0].Lat}==="0"){
+      if(${dbQueryResult[0].Lat}=="0"){
       document.querySelector('#mapContainer').style.display="none"
       }
     </script>
