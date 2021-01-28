@@ -1,3 +1,4 @@
+//유효성검증, 중복 방지 메커니즘 필요
 const render =`
   <div class="container mt-5">
     <h1 class="display-4 d-flex justify-content-center text-success">프로젝트 만들기</h1>
