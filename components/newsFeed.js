@@ -1,7 +1,7 @@
 const newsFeed = (dbQueryResult) => {
   const result_string = JSON.stringify(dbQueryResult);
   const  render = `
-  <div class="my-3">
+  <div class="container my-3">
     <div id="card-cols" class="card-columns my-3">
     </div>
     <button class="btn btn-outline-dark d-block mx-auto" onclick="loadMore();">더보기</button>
@@ -12,7 +12,7 @@ const newsFeed = (dbQueryResult) => {
     const postData = ${result_string};
     let postCounter = 10
     function cardList(id, title, description, imagePath) {
-      return '<a href="/o/' + id + '" class="text-decoration-none"><div class="card border-0 rounded-lg shadow-sm"><img src="../' + imagePath + '" class="card-img-top w-100 img-thumbnail" alt="card image cap"><div class="card-body"><h5 class="card-title text-dark font-weight-bolder">' + title + '</h5><p class="card-text text-dark">' + description + '</p></div></div></a>';
+      return '<a href="/o/post/' + id + '" class="text-decoration-none"><div class="card border-0 rounded-lg shadow-sm"><img src="/' + imagePath + '" class="card-img-top w-100 img-thumbnail" alt="card image cap"><div class="card-body"><h5 class="card-title text-dark font-weight-bolder">' + title + '</h5><p class="card-text text-dark">' + description + '</p></div></div></a>';
     };
     //첫 게시물 일단 10개만 뜨도록(개수는 postCounter로 수정 가능)
     var card_list = '';
