@@ -338,7 +338,7 @@ router.get('/create-project', (req, res) => {
     res.redirect('/o/profile');
   }
   else{
-    res.send(template.HTML(createProject)),auth.StatusUI(req, res);
+    res.send(template.HTML(createProject, auth.StatusUI(req, res)));
   }
 })
   
