@@ -18,7 +18,7 @@ router.get('/', (req,res)=>{
       }else{
         position.push(
           `{
-            content: '<div><a href="/o/${result[i].id}" target = "_blank">${result[i].o_name}</a></div>', 
+            content: '<div><a href="/o/post/${result[i].id}" target = "_blank">${result[i].o_name}</a></div>', 
             latlng: new kakao.maps.LatLng(${result[i].Lat}, ${result[i].Lng})
         }`
         )
@@ -45,7 +45,7 @@ router.get('/user', (req,res)=>{
       }else{
         position.push(
           `{
-            content: '<div><a href="/o/${result[i].id}" target = "_blank">${result[i].o_name}</a></div>', 
+            content: '<div><a href="/o/post/${result[i].id}" target = "_blank">${result[i].o_name}</a></div>', 
             latlng: new kakao.maps.LatLng(${result[i].Lat}, ${result[i].Lng})
         }`
         )
