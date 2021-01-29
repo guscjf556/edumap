@@ -7,7 +7,6 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
     `;
 
     for(const myProject of myProjectsInfo){
-      //수정하기 페이지 만들어야 한다!!!
       myProjects += `
       <div class="col my-1">
         <div class="card border rounded-lg shadow-sm">
@@ -27,9 +26,9 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
     `
   }
   else { 
-    const myProjects = `
-    <div class="text-center">
-      <h4>내가 만든 프로젝트가 없습니다.</h4>
+    myProjects = `
+    <div class="row row-cols-1">
+      <div class="text-center">내가 만든 프로젝트가 없습니다.</div>
     </div>
     ` 
   }; 
@@ -58,14 +57,7 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
       </div>
       `;
     }
-  }
-  else { 
-    const projectsIJoined = `
-    <div class="text-center">
-      <h4>현재 참여 중인 프로젝트가 없습니다.</h4>
-    </div>
-    ` 
-  }; 
+  };
 
   if(projectsIJoined === `<div class="row row-cols-1">`){
     projectsIJoined += `<div class="text-center">현재 가입한 프로젝트가 없습니다.</div>`

@@ -303,7 +303,7 @@ router.get('/profile', (req, res) => {
   }
   const userInfo = req.user;
   db.query("SELECT project_id, project_title FROM projects WHERE project_manager = ?", [req.user.userID], (err, result) => {
-    const myProjectsInfo = result ? result : null;
+    const myProjectsInfo = result[0] ? result : null;
     let userProjectsInfo;
     db.query("SELECT project_id FROM projects_members WHERE user_id = ?", [userInfo.userID], (err, result) => {
       if(err) throw err;
