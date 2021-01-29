@@ -32,7 +32,7 @@ router.get('/login', function(req, res) {
             <input type="password" class="form-control" id="pw" name="pw">
           </div>
           <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-success">로그인</button>
+            <input type="submit" class="btn btn-success" value="로그인">
           </div>
         </form>
       </p>
@@ -86,7 +86,7 @@ router.get('/register', function(req, res) {
               <input type="text" class="form-control" id="displayName" name="displayName" aria-describedby="displayNameHelp" required pattern="^[0-9a-zA-z가-힣]+$">
               <small id="displayNameHelp" class="form-text text-muted">'영문 대/소문자'와 '숫자'만 사용 가능합니다(특수기호 사용 불가능)</small>
             </div>
-            <button type="submit" class="btn btn-success">회원가입</button>
+            <input type="submit" class="btn btn-success" value="회원가입">
           </form>
         </p>
       </div> 

@@ -11,6 +11,7 @@ const post = require('../components/post');
 const profile = require('../components/profile');
 const createProject = require('../components/createProject');
 const joinProject = require('../components/joinProject');
+const updateProject = require('../components/updateProject');
 
 //멀터 설정 어디에 사진파일을 저장할지
 var _storage = multer.diskStorage({
@@ -91,7 +92,6 @@ let image_array = upload.fields([
   { name: "o_image_5", maxCount: 1 },
 ]);
 router.post("/create_process", image_array, function (req, res, next) {
-  //현철: 비동기이고, 압축이 시간이 걸려서 앞으로 빼놨고 압축이 끝나면 /o로 리다이렉트 되게 했습니다.
   (async() => {
     !fs.existsSync(`public/compressed-images/${req.user.userID}`) && fs.mkdirSync(`public/compressed-images/${req.user.userID}`);
     for(let i = 0; i<5; i++){
@@ -148,6 +148,7 @@ router.post("/create_process", image_array, function (req, res, next) {
 router.post("/update/:postId", (req, res) => {
   var postId = req.params.postId;
   db.query("SELECT * FROM topic WHERE id=?", [postId], function (err, result) {
+    if(err) throw err;
     var html = template.HTML(template.revise(postId, result), auth.StatusUI(req, res));
     res.send(html);
   });
@@ -344,7 +345,8 @@ router.get('/create-project', (req, res) => {
 router.post('/create-project-process', (req, res) => {
   const projectTitle = req.body.projectTitle;
   const projectPasscode = req.body.projectPasscode;
-  db.query("INSERT INTO projects (project_manager, project_title, project_passcode) VALUES (?, ?, ?)", [req.user.userID, projectTitle, projectPasscode], (err) => {
+  const projectDescription = req.body.projectDescription;
+  db.query("INSERT INTO projects (project_manager, project_title, project_passcode, project_description) VALUES (?, ?, ?, ?)", [req.user.userID, projectTitle, projectPasscode, projectDescription], (err) => {
     if(err) throw err;
     db.query("SELECT project_id FROM projects WHERE project_passcode = ?", [projectPasscode], (err, result) => {
       if(err) throw err;
@@ -364,7 +366,7 @@ router.get('/join-project', (req, res) => {
     res.redirect('/o/profile');
   }
   else{
-    res.send(template.HTML(joinProject),auth.StatusUI(req, res));
+    res.send(template.HTML(joinProject,auth.StatusUI(req, res)));
   }
 })
 
@@ -399,4 +401,43 @@ router.get('/project/:projectId', (req, res) => {
   });
 });
 
+router.post('/check-duplicate-passcode', (req, res) => {
+  const passcode = req.body.passcode;
+  db.query("SELECT * FROM projects WHERE project_passcode = ?", [passcode], (err, result) => {
+    if(err) throw err;
+    if(result[0]){ res.send(true); } else { res.send(false) };
+  })
+})
+
+router.get('/update-project/:projectId', (req, res) => {
+  const projectId = req.params.projectId;
+  db.query("SELECT * FROM projects WHERE project_id = ?", [projectId], (err, result) => {
+    if(err) throw err;
+    if(req.user?.userID === result[0].project_manager){
+      res.send(template.HTML(updateProject(result[0]), auth.StatusUI(req, res)))
+    }
+    else {
+      res.redirect('/o')
+    }
+  })
+})
+
+router.post('/update-project-process', (req, res) => {
+  const projectTitle = req.body.projectTitle;
+  const projectDescription = req.body.projectDescription;
+  const originalProjectTitle = req.body.originalProjectTitle;
+  db.query("UPDATE projects SET project_title = ?, project_description = ? WHERE project_title= ?", [projectTitle, projectDescription, originalProjectTitle], (err) => {
+    if(err) throw err;
+    res.redirect('/o/profile');
+  })
+})
+
+//프로젝트 삭제
+router.post('/delete-project', (req, res) => {
+  const projectId = req.body.projectId;
+  db.query("DELETE FROM projects WHERE project_id = ?", [projectId], (err) => {
+    if(err) throw err;
+    res.redirect('/o/profile');
+  })
+})
 module.exports = router;

@@ -9,13 +9,13 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
     for(const myProject of myProjectsInfo){
       //수정하기 페이지 만들어야 한다!!!
       myProjects += `
-      <div class="col">
+      <div class="col my-1">
         <div class="card border rounded-lg shadow-sm">
           <div class="card-body">
             <h5 class="card-title text-dark font-weight-bolder">${myProject.project_title}</h5>
             <p class="card-text">
             <a href="/o/project/${myProject.project_id}" id="${myProject.project_id}" class="btn btn-sm btn-success text-decoration-none">입장하기</a>
-            <a href="/o/${myProject.project_id}" id="${myProject.project_id}" class="btn btn-sm btn-warning text-decoration-none">수정하기</a>
+            <a href="/o/update-project/${myProject.project_id}" id="${myProject.project_id}" class="btn btn-sm btn-warning text-decoration-none">정보 보기/수정</a>
             </p>
           </div>
         </div>
@@ -40,13 +40,11 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
     projectsIJoined += `<div class="row row-cols-1">`;
 
     for(const projectInfo of userProjectsInfo){
-      console.log(typeof(projectInfo.project_manager), typeof(userInfo.userID))
       if(parseInt(projectInfo.project_manager) === parseInt(userInfo.userID)){
-        console.log("continue");
         continue;
       }
       projectsIJoined += `
-      <div class="col">
+      <div class="col my-1">
         <div class="card border rounded-lg shadow-sm">
           <div class="card-body">
             <h5 class="card-title text-dark font-weight-bolder">${projectInfo.project_title}</h5>
@@ -60,7 +58,6 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
       </div>
       `;
     }
-    console.log(projectsIJoined);
   }
   else { 
     const projectsIJoined = `

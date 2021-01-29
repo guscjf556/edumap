@@ -47,9 +47,7 @@ module.exports = {
             </div>
           </div>
         </nav>
-        <main>
           ${body}
-        </main>
       <!-- 모달 컴포넌트 -->
       <div class="modal fade" id="myModal" role="dialog" tabindex="-1">
         <div class="modal-dialog  modal-dialog-centered">
@@ -143,12 +141,12 @@ module.exports = {
     const selectFormMaker = (projectsIJoined) => {
       let render = `
       <select class="form-select" name="project_id" aria-label="Default select example">
-        <option value="" selected>없음</option>
+        <option value="0" selected>프로젝트 선택 안함</option>
       `
       if(projectsIJoined){
         for(const project of projectsIJoined){
           render += `
-          <option value="${project.project_id}">${project.displayName}</option>
+          <option value="${project.project_id}">${project.project_title}</option>
           `
         } 
       }
