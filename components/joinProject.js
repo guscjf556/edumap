@@ -12,7 +12,7 @@ const render = `
             <small class="form-text text-muted">프로젝트 관리자에게 받은 가입 코드를 입력하세요.</small>
           </div>
           <div class="d-flex justify-content-center">
-            <input type="submit" class="btn btn-success" value="로그인">
+            <input type="submit" class="btn btn-success" value="프로젝트 가입">
           </div>
         </form>
       </p>
