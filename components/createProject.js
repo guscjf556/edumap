@@ -1,3 +1,4 @@
+//중복확인을 해야 프로젝트 생성 동작으로 가도록하기
 const render =`
   <div class="container mt-5">
     <h1 class="display-4 d-flex justify-content-center text-success">프로젝트 만들기</h1>
