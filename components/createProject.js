@@ -17,7 +17,7 @@ const render =`
           </div>
           <div class="form-group">
             <label for="projectPasscode">프로젝트 가입 코드</label>
-            <input type="text" class="form-control" id="projectPasscode" name="projectPasscode" required pattern="^/S{8,}$">
+            <input type="text" class="form-control" id="projectPasscode" name="projectPasscode" required pattern="^\S{8,}$">
             <button type="button" id="duplicateCheck" class="btn btn-sm btn-warning" onclick=(checkDuplicatePasscode())>중복확인<small class="badge badge-pill badge-dark">필수</small></button>
             <small id="duplicateCheckResult" class="form-text text-muted"></small>
             <small class="form-text text-muted">다른 사용자의 프로젝트 가입 시 필요한 코드입니다. 8개 이상의 숫자, 문자를 사용해주세요. (이 코드는 암호화되지 않습니다. 개인적인 비밀번호를 사용하지 말아주세요.)</small>
