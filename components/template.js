@@ -238,7 +238,7 @@ module.exports = {
       <script>
       var imageSrc = '../icon/school_plant2.png', // 마커이미지의 주소입니다    
               imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
-              imageOption = {offset: new kakao.maps.Point(10, 16)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+              imageOption = {offset: new kakao.maps.Point(15, 25)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
               var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
       var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
           mapOption = { 
@@ -247,7 +247,10 @@ module.exports = {
           };
   
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-  
+      
+      // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+      map.setCursor('pointer');
+
       // 지도를 클릭한 위치에 표출할 마커입니다
       var marker = new kakao.maps.Marker({ 
           // 지도 중심좌표에 마커를 생성합니다 
@@ -294,7 +297,7 @@ module.exports = {
     `;
   },
 
-  //reise
+  //revise
   revise: function (postId,queryResult,projectsIJoined) {
     let imgURI = [];
     for(let i = 1; i < 6; i++){
@@ -489,8 +492,8 @@ module.exports = {
       <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
       <script>
       var imageSrc = '/icon/school_plant2.png', // 마커이미지의 주소입니다    
-              imageSize = new kakao.maps.Size(20, 20), // 마커이미지의 크기입니다
-              imageOption = {offset: new kakao.maps.Point(10, 16)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+              imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
+              imageOption = {offset: new kakao.maps.Point(15, 25)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
               var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
       var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
           mapOption = { 
@@ -499,6 +502,9 @@ module.exports = {
           };
   
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      
+      // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+      map.setCursor('pointer');
   
       // 지도를 클릭한 위치에 표출할 마커입니다
       var marker = new kakao.maps.Marker({ 
