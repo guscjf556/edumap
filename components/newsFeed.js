@@ -2,8 +2,7 @@ const newsFeed = (dbQueryResult) => {
   const result_string = JSON.stringify(dbQueryResult);
   const  render = `
   <div class="container my-3">
-    <div id="card-cols" class="card-columns my-3">
-    </div>
+    <div id="card-cols" class="card-columns my-3"></div>
     <button class="btn btn-outline-dark d-block mx-auto" onclick="loadMore();">더보기</button>
   </div>
   <script>

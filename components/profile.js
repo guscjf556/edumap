@@ -34,10 +34,8 @@ const profile = (userInfo, myProjectsInfo, userProjectsInfo) => {
   }; 
   
   //내가 가입한 프로젝트 렌더
-  let projectsIJoined = ""
+  let projectsIJoined = `<div class="row row-cols-1">`;
   if(userProjectsInfo) {
-    projectsIJoined += `<div class="row row-cols-1">`;
-
     for(const projectInfo of userProjectsInfo){
       if(parseInt(projectInfo.project_manager) === parseInt(userInfo.userID)){
         continue;
