@@ -327,7 +327,7 @@ router.get('/profile', (req, res) => {
 
 router.post('/nickname-change-process', (req, res) => {
   const newNickname = req.body.nickname;
-  db.query("UPDATE user SET displayName = ? WHERE userID = 1", [newNickname], (err) => {
+  db.query("UPDATE user SET displayName = ? WHERE userID = ?", [newNickname, req.user.userID], (err) => {
     if(err) throw err;
   })
   res.redirect('/o/profile');
