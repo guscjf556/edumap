@@ -437,7 +437,10 @@ router.post('/delete-project', (req, res) => {
   const projectId = req.body.projectId;
   db.query("DELETE FROM projects WHERE project_id = ?", [projectId], (err) => {
     if(err) throw err;
-    res.redirect('/o/profile');
+    db.query("DELETE FROM projects_members WHERE project_id = ?", [projectId], (err) => {
+      if(err) throw err;
+      res.redirect('/o/profile');
+    })
   })
 })
 module.exports = router;
