@@ -18,7 +18,7 @@ module.exports = {
         <link rel="stylesheet" href="/stylesheets/layout.css">
         <link rel="stylesheet" href="/owlcarousel/assets/owl.carousel.min.css" />
         <link rel="stylesheet" href="/owlcarousel/assets/owl.theme.default.min.css" />
-        <title>school plant</title>
+        <title>edumap</title>
         <style>
         </style>
       </head>
