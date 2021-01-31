@@ -474,7 +474,6 @@ router.post('/get-navbar-project-list-process/:userId', (req, res) => {
   const userId = req.body.userId;
   db.query("SELECT projects.project_id, projects.project_title FROM projects LEFT JOIN projects_members ON projects.project_id = projects_members.project_id WHERE projects_members.user_id = ?", [userId], (err, result) => {
     if(err) throw err;
-    console.log(result);
     let render = "";
     if(result[0]){
       for(const project of result) {
@@ -484,7 +483,6 @@ router.post('/get-navbar-project-list-process/:userId', (req, res) => {
     else {
       render += `<div class="dropdown-item"><small>가입한 프로젝트가 없습니다.</small></div>`;
     }
-    console.log(render);
     
     res.send(render);
   });
