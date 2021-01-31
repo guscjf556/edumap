@@ -42,6 +42,7 @@ const post = (dbQueryResult, commentsData, req, auth) => {
             <p>${date}</p>
           </div>
           <div id="commentWrapper">
+            <h5>댓글</h5>
             <div id="comments">
               ${comments(commentsData, req)}
             </div>

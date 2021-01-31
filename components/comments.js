@@ -2,11 +2,12 @@ const comments = (commentsData, req) => {
   let render = "";
   for(let i = 0; i < commentsData.length; i++){
     render += `
-    <div class="row" id="${commentsData[i].comment_id}">
-      <div class="col-3 text-break"><span class="badge badge-dark">${commentsData[i].displayName}</span></div>
-      <div class="col-7 text-break">
-        <div>${commentsData[i].Content}</div>
-        <div><small>${commentsData[i].Created.toLocaleString("ko-KR")}</small></div>
+    <div class="row my-1" id="${commentsData[i].comment_id}">
+      <div class="col-12 text-break">
+        <span class="text-break badge badge-pill badge-secondary">${commentsData[i].displayName}</span>
+        <span class="text-break">${commentsData[i].Content}</span></div>
+      <div class="col-12 text-break">
+        <small>${commentsData[i].Created.toLocaleString("ko-KR")}</small>
       </div> 
     `;
     if(req.user && req.user.userID === commentsData[i].CommentUserID){
