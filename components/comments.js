@@ -3,12 +3,16 @@ const comments = (commentsData, req) => {
   for(let i = 0; i < commentsData.length; i++){
     render += `
     <div class="row my-1" id="${commentsData[i].comment_id}">
-      <div class="col-12 text-break">
-        <span class="text-break badge badge-pill badge-secondary">${commentsData[i].displayName}</span>
-        <span class="text-break">${commentsData[i].Content}</span></div>
-      <div class="col-12 text-break">
-        <small class="text-secondary">${commentsData[i].Created.toLocaleString("ko-KR")}</small>
-      </div> 
+      <div class="col-10">
+        <div class="row">
+          <div class="col-12">
+            <span class="text-break badge badge-pill badge-secondary">${commentsData[i].displayName}</span>
+            <span class="text-break">${commentsData[i].Content}</span></div>
+          </div>
+          <div class="col-12">
+            <small class="text-secondary">${commentsData[i].Created.toLocaleString("ko-KR")}</small>
+          </div>
+        </div>
     `;
     if(req.user && req.user.userID === commentsData[i].CommentUserID){
       render += `
