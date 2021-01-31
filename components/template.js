@@ -251,8 +251,8 @@ module.exports = {
       <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
       <script>
       var imageSrc = '../icon/school_plant2.png', // 마커이미지의 주소입니다    
-              imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
-              imageOption = {offset: new kakao.maps.Point(15, 25)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+              imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
+              imageOption = {offset: new kakao.maps.Point(20, 35)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
               var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
       var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
           mapOption = { 
@@ -519,8 +519,8 @@ module.exports = {
       <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
       <script>
       var imageSrc = '/icon/school_plant2.png', // 마커이미지의 주소입니다    
-              imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
-              imageOption = {offset: new kakao.maps.Point(15, 25)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+              imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
+              imageOption = {offset: new kakao.maps.Point(20, 35)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
               var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
       var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
           mapOption = { 
