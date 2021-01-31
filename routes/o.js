@@ -62,6 +62,7 @@ router.get("/notLogin", (req, res) => {
 
 // 카드 및 첫화면
 router.get("/", (req, res) => {
+  res.cookie("url", req.originalUrl);
   db.query("SELECT * FROM topic ORDER BY id DESC", (err, result) => {
     const body = newsFeed(result);
     var html = template.HTML(body, auth.StatusUI(req, res));
@@ -71,9 +72,10 @@ router.get("/", (req, res) => {
 
 //생성
 router.get("/create", (req, res) => {
-  if (!auth.IsOwner(req, res)) {
-    res.redirect("/o");
-    return false;
+  res.cookie("url", req.originalUrl);
+  if (!req.user) {
+    res.redirect("/u/login");
+    return
   }
   db.query("SELECT projects.project_id, projects.project_title FROM projects LEFT JOIN projects_members ON projects.project_id = projects_members.project_id WHERE projects_members.user_id = ?", [req.user.userID], (err, result) => {
     const projectsIJoined = result;
@@ -149,10 +151,16 @@ router.post("/update/:postId", (req, res) => {
   var postId = req.params.postId;
   db.query("SELECT * FROM topic WHERE id=?", [postId], function (err, result) {
     if(err) throw err;
-    var html = template.HTML(template.revise(postId, result), auth.StatusUI(req, res));
-    res.send(html);
+    const postData = result;
+    db.query("SELECT projects.project_id, projects.project_title FROM projects LEFT JOIN projects_members ON projects.project_id = projects_members.project_id WHERE projects_members.user_id = ?", [req.user.userID], (err, result) => {
+      const projectsIJoined = result;
+      const html = template.HTML(template.revise(postId, postData, projectsIJoined), auth.StatusUI(req, res));
+      res.send(html);
+    })
   });
 });
+
+
 
 // 글 수정하기 process
 router.post("/update_process", image_array, (req, res, next) => {
@@ -255,6 +263,7 @@ router.post("/delete", (req, res) => {
 // 상세보기
 // 이게 다른 것보다 앞에 있으면 문자열이 postId 변수로 들어가 오류를 일으키는구나...
 router.get("/post/:postId", (req, res) => {
+  res.cookie("url", req.originalUrl);
   const postId = req.params.postId;
   db.query(
     "SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE postID = ?", [postId], (err, commentsData) => {
@@ -297,8 +306,9 @@ router.post("/delete-comment-process/:comment_id", (req, res) => {
 
 //프로필 페이지
 router.get('/profile', (req, res) => {
+  res.cookie("url", req.originalUrl);
   if(!req.user){
-    res.redirect("/o");
+    res.redirect("/u/login");
     return
   }
   const userInfo = req.user;
@@ -394,11 +404,26 @@ router.post('/quit-project-process/:projectId', (req, res) => {
 
 router.get('/project/:projectId', (req, res) => {
   const projectId = req.params.projectId;
-  db.query("SELECT * FROM topic WHERE project_id = ? ORDER BY id DESC", [projectId], (err, result) => {
-    const body = newsFeed(result);
-    var html = template.HTML(body, auth.StatusUI(req, res));
-    res.send(html);
-  });
+  if(!req.user) {
+    res.redirect('/o');
+    return;
+  } 
+  db.query("SELECT project_id FROM projects_members WHERE user_id = ?", [req.user.userID], (err, result) => {
+    if(err) throw err;
+    const checkMembership = result.some((project) => {
+      return project.project_id === parseInt(projectId)
+    });
+    if(!checkMembership) {
+      res.redirect('/o');
+    }
+    else {
+      db.query("SELECT * FROM topic WHERE project_id = ? ORDER BY id DESC", [projectId], (err, result) => {
+        const body = newsFeed(result);
+        var html = template.HTML(body, auth.StatusUI(req, res));
+        res.send(html);
+      });
+    };
+  })
 });
 
 router.post('/check-duplicate-passcode', (req, res) => {

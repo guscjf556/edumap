@@ -2,6 +2,7 @@ const express = require('express') ;
 const app = express();
 const port = 3000 ;
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const oRouter = require('./routes/o');
 const mapRouter = require('./routes/map');
 const session = require('express-session');
@@ -13,6 +14,8 @@ app.use(express.static(__dirname + '/public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/owlcarousel', express.static(__dirname + '/node_modules/owl.carousel/dist/'));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
 app.use(session({
     secret: 'jsdnaskgl',
     resave: false,

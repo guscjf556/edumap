@@ -62,7 +62,7 @@ module.exports = {
               <p>로그인이 필요한 기능입니다.<br>로그인하시겠습니까?</p>
             </div>
             <div class="modal-footer">
-              <a href="/u/login" class="btn btn-sm btn-success">로그인</a>
+              <a href="/o/create" class="btn btn-sm btn-success">로그인</a>
               <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">취소</button>
             </div>
           </div>

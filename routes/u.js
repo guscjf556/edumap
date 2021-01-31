@@ -43,11 +43,15 @@ router.get('/login', function(req, res) {
 });
 
 //passport가 로그인을 처리하는 과정
-router.post('/login_process', (req, res) => {
-  passport.authenticate('local', { 
-    successRedirect: `/o`,
-    failureRedirect: '/u/login', 
-    failureFlash: true});
+router.post('/login_process', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {return next(err);}
+    if (!user) { return res.redirect('/u/login')}
+    req.logIn(user, (err) => {
+      if(err) { return next(err); }
+      return res.redirect(req.cookies.url);
+    });
+  }) (req, res, next);
 });
 
 // 회원가입
