@@ -148,6 +148,10 @@ router.post("/create_process", image_array, function (req, res, next) {
 
 //  글 수정하기
 router.post("/update/:postId", (req, res) => {
+  if(!req.user){
+    res.redirect(req.cookies.url);
+    return;
+  }
   var postId = req.params.postId;
   db.query("SELECT * FROM topic WHERE id=?", [postId], function (err, result) {
     if(err) throw err;
