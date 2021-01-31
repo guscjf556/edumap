@@ -378,7 +378,6 @@ module.exports = {
     }
 
     const selectFormMaker = (projectsIJoined) => {
-      console.log(queryResult[0].project_id);
       let render = ""
       if(queryResult[0].project_id === 0){
         render += `
@@ -395,7 +394,6 @@ module.exports = {
       
       if(projectsIJoined){
         for(const project of projectsIJoined){
-          console.log(project.project_id);
           if(project.project_id === queryResult[0].project_id){
             render += `
           <option value="${project.project_id}" selected>${project.project_title}</option>
@@ -412,7 +410,6 @@ module.exports = {
       render += `
       </select>
       `
-      console.log(render);
       return render;
     }
 
