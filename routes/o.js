@@ -468,4 +468,26 @@ router.post('/delete-project', (req, res) => {
     })
   })
 })
+
+//네비게이션바 프로젝트 목록 불러오기 AJAX
+router.post('/get-navbar-project-list-process/:userId', (req, res) => {
+  const userId = req.body.userId;
+  db.query("SELECT projects.project_id, projects.project_title FROM projects LEFT JOIN projects_members ON projects.project_id = projects_members.project_id WHERE projects_members.user_id = ?", [userId], (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    let render = "";
+    if(result[0]){
+      for(const project of result) {
+        render += `<a href="/o/project/${project.project_id}" class="dropdown-item">${project.project_title}</a>`
+      };
+    }
+    else {
+      render += `<div class="dropdown-item"><small>가입한 프로젝트가 없습니다.</small></div>`;
+    }
+    console.log(render);
+    
+    res.send(render);
+  });
+});
+
 module.exports = router;
