@@ -378,22 +378,41 @@ module.exports = {
     }
 
     const selectFormMaker = (projectsIJoined) => {
-      let render = `
-      <select class="form-select" name="project_id" aria-label="Default select example">
-        <option value="" selected>없음</option>
-      `
+      console.log(queryResult[0].project_id);
+      let render = ""
+      if(queryResult[0].project_id === 0){
+        render += `
+        <select class="form-select" name="project_id" aria-label="Default select example">
+          <option value="0" selected>없음</option>
+        `
+      }
+      else {
+        render += `
+        <select class="form-select" name="project_id" aria-label="Default select example">
+          <option value="0">없음</option>
+        `
+      }
+      
       if(projectsIJoined){
         for(const project of projectsIJoined){
-          render += `
-          <option value="${project.project_id}">${project.project_title}</option>
+          console.log(project.project_id);
+          if(project.project_id === queryResult[0].project_id){
+            render += `
+          <option value="${project.project_id}" selected>${project.project_title}</option>
           `
+          }
+          else {
+            render += `
+            <option value="${project.project_id}">${project.project_title}</option>
+            `
+          }
         } 
       }
 
       render += `
       </select>
       `
-
+      console.log(render);
       return render;
     }
 
