@@ -7,7 +7,7 @@ const comments = (commentsData, req) => {
         <span class="text-break badge badge-pill badge-secondary">${commentsData[i].displayName}</span>
         <span class="text-break">${commentsData[i].Content}</span></div>
       <div class="col-12 text-break">
-        <small>${commentsData[i].Created.toLocaleString("ko-KR")}</small>
+        <small class="text-secondary">${commentsData[i].Created.toLocaleString("ko-KR")}</small>
       </div> 
     `;
     if(req.user && req.user.userID === commentsData[i].CommentUserID){
