@@ -30,6 +30,16 @@ const comments = (commentsData, req) => {
     </div>
     `;
   };
+  if(req.user){
+    render += `
+    <div class="container">
+      <form id="form" class="row">
+        <textarea class="form-control col-9" id="commentContent" name="commentContent" rows="1" required></textarea>
+        <input class="form-control col-3" id="submit" type="submit" value="게시">
+      </form>
+    </div>
+    `
+  }
   render += `
   <script>
     function deleteComment(elem){
@@ -42,6 +52,18 @@ const comments = (commentsData, req) => {
         },
       });
     }
+
+    $('#form').submit(function(e){
+      e.preventDefault();
+      $.ajax({
+        url: '/o/comment-process/${req.params.postId}',
+        type: 'post',
+        data: $(this).serializeArray(),
+        success: function(){
+          location.reload();
+        },
+      });
+    });
   </script>
   `
 
