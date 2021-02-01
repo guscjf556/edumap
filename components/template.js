@@ -207,7 +207,7 @@ module.exports = {
             <div class="mb-3">
               <p class="text-success">관찰 위치<p>
               <div id="map" class="shadow w-100" style="height:300px;"></div>
-              <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기(3초 소요)</button>
+              <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기</button>
               <div><small class="text-secondary">내 위치 사용을 원하시면 위치 권한 안내창에서 <span class="text-danger">권한을 허용해주세요.</span>(기기에 따라 위치 변경 속도가 다릅니다. 버튼을 누르고 조금만 기다려주세요!)</small></div>
             </div>
             </div>
@@ -490,7 +490,7 @@ module.exports = {
                 <div id = "mapContainer" class="mb-3">
                   <p class="text-success">관찰 위치</p>
                   <div id="map" class="shadow w-100" style="height:300px;"></div>
-                  <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기(3초 소요)</button>
+                  <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기</button>
                   <div><small class="text-secondary">내 위치 사용을 원하시면 위치 권한 안내창에서 <span class="text-danger">권한을 허용해주세요.</span>(기기에 따라 위치 변경 속도가 다릅니다. 버튼을 누르고 조금만 기다려주세요!)</small></div>
                 </div>
               </div>
