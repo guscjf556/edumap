@@ -49,6 +49,7 @@ router.post('/login_process', (req, res, next) => {
     if (!user) { return res.redirect('/u/login')}
     req.logIn(user, (err) => {
       if(err) { return next(err); }
+      console.log("login => ", user.displayName);
       return res.redirect(req.cookies.url);
     });
   }) (req, res, next);
