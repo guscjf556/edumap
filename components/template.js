@@ -207,13 +207,15 @@ module.exports = {
             <div class="mb-3">
               <p class="text-success">관찰 위치<p>
               <div id="map" class="shadow w-100" style="height:300px;"></div>
+              <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기(3초 소요)</button>
+              <div><small class="text-secondary">내 위치 사용을 원하시면 edumap에게 위치 권한이 있어야합니다. 위치 허용 안내창에서 권한을 허락해주세요. 위치 변경은 3초 정도 소요되니, 버튼을 누르고 조금만 기다려주세요!</small></div>
             </div>
             </div>
             </div>
             <div class="form-group">
               <label for="o_memo" class="text-success">관찰 메모</label>
               <textarea class="form-control" id="o_memo" name="o_memo" placeholder="메모" rows="3" aria-describedby="o_memo_help"></textarea>
-              <small id="o_memo_help" class="form-textarea">식물을 관찰한 내용을 자유롭게 적으세요.</small>
+              <small id="o_memo_help" class="form-textarea text-secondary">식물을 관찰한 내용을 자유롭게 적으세요.</small>
             </div>
             <!--요거 위도와 경도는 숨겨야함!!-->
             <div style="display:none">
@@ -242,115 +244,108 @@ module.exports = {
         </div>
       </div>
     </div>
-      <script>
-        ${previewJS()}
-        var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-        var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().substring(0, 16);
-        document.getElementById('o_time').value = localISOTime;
-      </script>
-      <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
-      <script>
-      var imageSrc = '../icon/school_plant2.png', // 마커이미지의 주소입니다    
-              imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
-              imageOption = {offset: new kakao.maps.Point(20, 35)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-              var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+  <script>
+  ${previewJS()}
+  var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+  var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().substring(0, 16);
+  document.getElementById('o_time').value = localISOTime;
+  </script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
+  <script>
+  var imageSrc = '../icon/school_plant2.png', // 마커이미지의 주소입니다    
+  imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
+  imageOption = {offset: new kakao.maps.Point(20, 35)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+  var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
-      if(navigator.geolocation.coords === undefined){
-        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-        mapOption = { 
-            center: new kakao.maps.LatLng(36.615622, 127.484948), // 지도의 중심좌표
-            level: 7 // 지도의 확대 레벨
-        };
+  var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+  mapOption = { 
+    center: new kakao.maps.LatLng(36.615622, 127.484948), // 지도의 중심좌표
+    level: 7 // 지도의 확대 레벨
+  };
+
+  var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
   
-        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+  // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+  map.setCursor('pointer');
+
+  // 지도를 클릭한 위치에 표출할 마커입니다
+  var marker = new kakao.maps.Marker({ 
+    // 지도 중심좌표에 마커를 생성합니다 
+    position: map.getCenter() ,
+    image : markerImage
+  }); 
+
+  // 지도에 클릭 이벤트를 등록합니다
+  // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+  kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+    // 클릭한 위도, 경도 정보를 가져옵니다 
+    var latlng = mouseEvent.latLng;
+
+    // 마커 위치를 클릭한 위치로 옮깁니다
+    marker.setPosition(latlng);
+
+    // 지도에 마커를 표시합니다 
+    marker.setMap(map);
+    
+    document.querySelector('#Lat').setAttribute('value', latlng.Ma);
+    document.querySelector('#Lng').setAttribute('value', latlng.La);
+  });
+
+  const goToMyLocation = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+      mapOption = { 
+        center: new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+      };
+
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      
+      // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+      map.setCursor('pointer');
+
+      // 지도를 클릭한 위치에 표출할 마커입니다
+      var marker = new kakao.maps.Marker({ 
+        // 지도 중심좌표에 마커를 생성합니다 
+        position: map.getCenter() ,
+        image : markerImage
+      }); 
+      
+  
+      // 지도에 클릭 이벤트를 등록합니다
+      // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+      kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+        // 클릭한 위도, 경도 정보를 가져옵니다 
+        var latlng = mouseEvent.latLng;
+
+        // 마커 위치를 클릭한 위치로 옮깁니다
+        marker.setPosition(latlng);
+
+        // 지도에 마커를 표시합니다 
+        marker.setMap(map);
         
-        // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
-        map.setCursor('pointer');
+        document.querySelector('#Lat').setAttribute('value', latlng.Ma);
+        document.querySelector('#Lng').setAttribute('value', latlng.La);
+      });
+    });
+  }
 
-        // 지도를 클릭한 위치에 표출할 마커입니다
-        var marker = new kakao.maps.Marker({ 
-            // 지도 중심좌표에 마커를 생성합니다 
-            position: map.getCenter() ,
-            image : markerImage
-        }); 
-    
-        // 지도에 클릭 이벤트를 등록합니다
-        // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-        kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
-            
-    
-            // 클릭한 위도, 경도 정보를 가져옵니다 
-            var latlng = mouseEvent.latLng;
-
-            // 마커 위치를 클릭한 위치로 옮깁니다
-            marker.setPosition(latlng);
-
-            // 지도에 마커를 표시합니다 
-            marker.setMap(map);
-            
-            document.querySelector('#Lat').setAttribute('value', latlng.Ma);
-            document.querySelector('#Lng').setAttribute('value', latlng.La);
-    
-        });
+  $('#form').submit(function(e){
+    e.preventDefault();
+    Document.getElementsByTagName
+    $('#loaderModal').modal('show')
+    $.ajax({
+      url: '/o/create_process',
+      type: 'post',
+      data: new FormData(this),
+      processData: false,
+      contentType: false,
+      success: function(){
+        window.location.replace("/o")
       }
-      else{
-        navigator.geolocation.getCurrentPosition((position) => {
-          var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-          mapOption = { 
-              center: new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude), // 지도의 중심좌표
-              level: 3 // 지도의 확대 레벨
-          };
-    
-          var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-          
-          // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
-          map.setCursor('pointer');
-
-          // 지도를 클릭한 위치에 표출할 마커입니다
-          var marker = new kakao.maps.Marker({ 
-              // 지도 중심좌표에 마커를 생성합니다 
-              position: map.getCenter() ,
-              image : markerImage
-          }); 
-          
-      
-          // 지도에 클릭 이벤트를 등록합니다
-          // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-          kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
-              
-      
-              // 클릭한 위도, 경도 정보를 가져옵니다 
-              var latlng = mouseEvent.latLng;
-
-              // 마커 위치를 클릭한 위치로 옮깁니다
-              marker.setPosition(latlng);
-
-              // 지도에 마커를 표시합니다 
-              marker.setMap(map);
-              
-              document.querySelector('#Lat').setAttribute('value', latlng.Ma);
-              document.querySelector('#Lng').setAttribute('value', latlng.La);
-      
-          });
-        });
-      }
-      
-      $('#form').submit(function(e){
-        e.preventDefault();
-        Document.getElementsByTagName
-        $('#loaderModal').modal('show')
-        $.ajax({
-          url: '/o/create_process',
-          type: 'post',
-          data: new FormData(this),
-          processData: false,
-          contentType: false,
-          success: function(){
-            window.location.replace("/o")
-          }
-        })
-      })
-      </script>
+    })
+  })
+  </script>
     `;
   },
 
@@ -495,13 +490,15 @@ module.exports = {
                 <div id = "mapContainer" class="mb-3">
                   <p class="text-success">관찰 위치</p>
                   <div id="map" class="shadow w-100" style="height:300px;"></div>
+                  <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기(3초 소요)</button>
+                  <div><small class="text-secondary">내 위치 사용을 원하시면 edumap에게 위치 권한이 있어야합니다. 위치 허용 안내창에서 권한을 허락해주세요. 위치 변경은 3초 정도 소요되니, 버튼을 누르고 조금만 기다려주세요!</small></div>
                 </div>
               </div>
             </div>
             <div class="form-group">
               <label for="o_memo" class="text-success">관찰 메모</label>
               <textarea class="form-control" id="o_memo" name="o_memo"  rows="3" aria-describedby="o_memo_help">${queryResult[0].description}</textarea>
-              <small id="o_memo_help" class="form-textarea">식물을 관찰한 내용을 자유롭게 적으세요.</small>
+              <small id="o_memo_help" class="form-textarea text-secondary">식물을 관찰한 내용을 자유롭게 적으세요.</small>
             </div>
             <!--요거 위도와 경도는 숨겨야함!!-->
             <div style="display:none">
@@ -556,154 +553,146 @@ module.exports = {
         </div>
       </div>
     </div>
-      <script>
-        ${previewJS()}
-        function showDeleteModal(){
-          $('#modal-deletePost').modal('show');
-        }
-      </script>
-      <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
-      <script>
-      var imageSrc = '/icon/school_plant2.png', // 마커이미지의 주소입니다    
-              imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
-              imageOption = {offset: new kakao.maps.Point(20, 35)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-              var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+  <script>
+  ${previewJS()}
+  function showDeleteModal(){
+    $('#modal-deletePost').modal('show');
+  }
+  </script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
+  <script>
+  var imageSrc = '/icon/school_plant2.png', // 마커이미지의 주소입니다    
+  imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
+  imageOption = {offset: new kakao.maps.Point(20, 35)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+  var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
-      if("${queryResult[0].Lat}" === "0"){
-        if(navigator.geolocation.coords === undefined) {
-          var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-          mapOption = { 
-              center: new kakao.maps.LatLng(36.615622, 127.484948), // 지도의 중심좌표
-              level: 7 // 지도의 확대 레벨
-          };
+  if("${queryResult[0].Lat}" === "0"){
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(36.615622, 127.484948), // 지도의 중심좌표
+        level: 7 // 지도의 확대 레벨
+    };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
     
-          var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+    // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+    map.setCursor('pointer');
+
+    // 지도를 클릭한 위치에 표출할 마커입니다
+    var marker = new kakao.maps.Marker({ 
+        // 지도 중심좌표에 마커를 생성합니다 
+        position: map.getCenter() ,
+        image : markerImage
+    }); 
           
-          // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
-          map.setCursor('pointer');
-  
-          // 지도를 클릭한 위치에 표출할 마커입니다
-          var marker = new kakao.maps.Marker({ 
-              // 지도 중심좌표에 마커를 생성합니다 
-              position: map.getCenter() ,
-              image : markerImage
-          }); 
-          
-      
-          // 지도에 클릭 이벤트를 등록합니다
-          // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-          kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
-              
-      
-              // 클릭한 위도, 경도 정보를 가져옵니다 
-              var latlng = mouseEvent.latLng;
-  
-              // 마커 위치를 클릭한 위치로 옮깁니다
-              marker.setPosition(latlng);
-  
-              // 지도에 마커를 표시합니다 
-              marker.setMap(map);
-              
-              document.querySelector('#Lat').setAttribute('value', latlng.Ma);
-              document.querySelector('#Lng').setAttribute('value', latlng.La);
-      
-          });
-        }
-        else {
-          navigator.geolocation.getCurrentPosition((position) => {
-            var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-            mapOption = { 
-                center: new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude), // 지도의 중심좌표
-                level: 3 // 지도의 확대 레벨
-            };
-      
-            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-            
-            // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
-            map.setCursor('pointer');
-    
-            // 지도를 클릭한 위치에 표출할 마커입니다
-            var marker = new kakao.maps.Marker({ 
-                // 지도 중심좌표에 마커를 생성합니다 
-                position: map.getCenter() ,
-                image : markerImage
-            }); 
-            
+    // 지도에 클릭 이벤트를 등록합니다
+    // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
         
-            // 지도에 클릭 이벤트를 등록합니다
-            // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-            kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
-                
-        
-                // 클릭한 위도, 경도 정보를 가져옵니다 
-                var latlng = mouseEvent.latLng;
-    
-                // 마커 위치를 클릭한 위치로 옮깁니다
-                marker.setPosition(latlng);
-    
-                // 지도에 마커를 표시합니다 
-                marker.setMap(map);
-                
-                document.querySelector('#Lat').setAttribute('value', latlng.Ma);
-                document.querySelector('#Lng').setAttribute('value', latlng.La);
-        
-            });
-          });
-        };
-      }
-      else{
-        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-        mapOption = { 
-            center: new kakao.maps.LatLng(${queryResult[0].Lat}, ${queryResult[0].Lng}), // 지도의 중심좌표
-            level: 3 // 지도의 확대 레벨
-        };
 
-        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-        
-        // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
-        map.setCursor('pointer');
+        // 클릭한 위도, 경도 정보를 가져옵니다 
+        var latlng = mouseEvent.latLng;
 
-        // 지도를 클릭한 위치에 표출할 마커입니다
-        var marker = new kakao.maps.Marker({ 
-            // 지도 중심좌표에 마커를 생성합니다 
-            position: new kakao.maps.LatLng(${queryResult[0].Lat}, ${queryResult[0].Lng}),
-            image : markerImage
-        }); 
-        // 지도에 마커를 표시합니다
+        // 마커 위치를 클릭한 위치로 옮깁니다
+        marker.setPosition(latlng);
+
+        // 지도에 마커를 표시합니다 
         marker.setMap(map);
+        
+        document.querySelector('#Lat').setAttribute('value', latlng.Ma);
+        document.querySelector('#Lng').setAttribute('value', latlng.La);
 
-        // 지도에 클릭 이벤트를 등록합니다
-        // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-        kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
-            
+    });
+  }
+  else{
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+      center: new kakao.maps.LatLng(${queryResult[0].Lat}, ${queryResult[0].Lng}), // 지도의 중심좌표
+      level: 3 // 지도의 확대 레벨
+    };
 
-            // 클릭한 위도, 경도 정보를 가져옵니다 
-            var latlng = mouseEvent.latLng; 
-            
-            // 마커 위치를 클릭한 위치로 옮깁니다
-            marker.setPosition(latlng);
-            
-            document.querySelector('#Lat').setAttribute('value', latlng.Ma);
-            document.querySelector('#Lng').setAttribute('value', latlng.La);
+    var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+    
+    // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+    map.setCursor('pointer');
 
-        });
-      }
+    // 지도를 클릭한 위치에 표출할 마커입니다
+    var marker = new kakao.maps.Marker({ 
+      // 지도 중심좌표에 마커를 생성합니다 
+      position: new kakao.maps.LatLng(${queryResult[0].Lat}, ${queryResult[0].Lng}),
+      image : markerImage
+    }); 
+    // 지도에 마커를 표시합니다
+    marker.setMap(map);
+
+    // 지도에 클릭 이벤트를 등록합니다
+    // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+      // 클릭한 위도, 경도 정보를 가져옵니다 
+      var latlng = mouseEvent.latLng; 
       
-      $('#form').submit(function(e){
-        e.preventDefault();
-        $('#loaderModal').modal('show')
-        $.ajax({
-          url: '/o/update_process',
-          type: 'post',
-          data: new FormData(this),
-          processData: false,
-          contentType: false,
-          success: function(){
-            window.location.replace("/o")
-          }
-        })
-      })
-    </script>
+      // 마커 위치를 클릭한 위치로 옮깁니다
+      marker.setPosition(latlng);
+      
+      document.querySelector('#Lat').setAttribute('value', latlng.Ma);
+      document.querySelector('#Lng').setAttribute('value', latlng.La);
+    });
+  }
+
+  const goToMyLocation = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+      mapOption = { 
+        center: new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+      };
+
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      
+      // 지도에 마우스를 올리면 손가락 모양이 뜨게 함    
+      map.setCursor('pointer');
+
+      // 지도를 클릭한 위치에 표출할 마커입니다
+      var marker = new kakao.maps.Marker({ 
+      // 지도 중심좌표에 마커를 생성합니다 
+      position: map.getCenter() ,
+      image : markerImage
+      }); 
+      
+  
+      // 지도에 클릭 이벤트를 등록합니다
+      // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+      kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+        // 클릭한 위도, 경도 정보를 가져옵니다 
+        var latlng = mouseEvent.latLng;
+
+        // 마커 위치를 클릭한 위치로 옮깁니다
+        marker.setPosition(latlng);
+
+        // 지도에 마커를 표시합니다 
+        marker.setMap(map);
+        
+        document.querySelector('#Lat').setAttribute('value', latlng.Ma);
+        document.querySelector('#Lng').setAttribute('value', latlng.La);
+      });
+    });
+  };
+    
+  $('#form').submit(function(e){
+    e.preventDefault();
+    $('#loaderModal').modal('show')
+    $.ajax({
+      url: '/o/update_process',
+      type: 'post',
+      data: new FormData(this),
+      processData: false,
+      contentType: false,
+      success: function(){
+        window.location.replace("/o")
+      }
+    })
+  })
+</script>
     `;
   }
 };
