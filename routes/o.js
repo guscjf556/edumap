@@ -265,7 +265,6 @@ router.post("/delete", (req, res) => {
 
 
 // 상세보기
-// 이게 다른 것보다 앞에 있으면 문자열이 postId 변수로 들어가 오류를 일으키는구나...
 router.get("/post/:postId", (req, res) => {
   res.cookie("url", req.originalUrl);
   const postId = req.params.postId;
@@ -274,8 +273,9 @@ router.get("/post/:postId", (req, res) => {
       db.query(
         "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
         [postId],
-        (err, postData) => {
-          const body = post(postData, commentsData, req, auth);
+        (err, result) => {
+          const postData = result[0];
+          const body = post(postData, commentsData, req);
           const html = template.HTML(body, auth.StatusUI(req, res));
           res.send(html);
         }
@@ -284,6 +284,7 @@ router.get("/post/:postId", (req, res) => {
   )
 });
 
+//댓글 업로드 작업
 router.post("/comment-process/:postID", (req, res) => {
   const postID = parseInt(req.params.postID);
   const userID = req.user.userID;
@@ -300,6 +301,7 @@ router.post("/comment-process/:postID", (req, res) => {
   });
 })
 
+//댓글 지우기 작업
 router.post("/delete-comment-process/:comment_id", (req, res) => {
   const comment_id = parseInt(req.params.comment_id);
   db.query("DELETE FROM Comments WHERE comment_id=?", [comment_id], err => {
@@ -339,6 +341,7 @@ router.get('/profile', (req, res) => {
   });
 });
 
+//별명 변경 작업
 router.post('/nickname-change-process', (req, res) => {
   const newNickname = req.body.nickname;
   db.query("UPDATE user SET displayName = ? WHERE userID = ?", [newNickname, req.user.userID], (err) => {
@@ -347,6 +350,7 @@ router.post('/nickname-change-process', (req, res) => {
   res.redirect('/o/profile');
 })
 
+//프로젝트 생성 페이지
 router.get('/create-project', (req, res) => {
   if(!req.user){
     res.redirect('/o/profile');
@@ -355,7 +359,8 @@ router.get('/create-project', (req, res) => {
     res.send(template.HTML(createProject, auth.StatusUI(req, res)));
   }
 })
-  
+
+//프로젝트 생성 작업
 router.post('/create-project-process', (req, res) => {
   const projectTitle = req.body.projectTitle;
   const projectPasscode = req.body.projectPasscode;
@@ -375,6 +380,7 @@ router.post('/create-project-process', (req, res) => {
   });
 });
 
+//프로젝트 가입 페이지
 router.get('/join-project', (req, res) => {
   if(!req.user){
     res.redirect('/o/profile');
@@ -384,6 +390,7 @@ router.get('/join-project', (req, res) => {
   }
 })
 
+//프로젝트 가입 작업
 router.post('/join-project-process', (req, res) => {
   const projectPasscode = req.body.projectPasscode;
   db.query("SELECT project_id FROM projects WHERE project_passcode = ?", [projectPasscode], (err, result) => {
@@ -398,6 +405,7 @@ router.post('/join-project-process', (req, res) => {
   })
 });
 
+//프로젝트 탈퇴 페이지
 router.post('/quit-project-process/:projectId', (req, res) => {
   const projectId = req.params.projectId;
   db.query("DELETE FROM projects_members WHERE project_id = ? AND user_id = ?", [projectId, req.user.userID], (err) => {
@@ -406,6 +414,7 @@ router.post('/quit-project-process/:projectId', (req, res) => {
   });
 })
 
+//프로젝트 페이지
 router.get('/project/:projectId', (req, res) => {
   const projectId = req.params.projectId;
   if(!req.user) {
@@ -430,6 +439,7 @@ router.get('/project/:projectId', (req, res) => {
   })
 });
 
+//프로젝트 생성 시 중복 확인 작업
 router.post('/check-duplicate-passcode', (req, res) => {
   const passcode = req.body.passcode;
   db.query("SELECT * FROM projects WHERE project_passcode = ?", [passcode], (err, result) => {
@@ -438,6 +448,7 @@ router.post('/check-duplicate-passcode', (req, res) => {
   })
 })
 
+//프로젝트 수정 페이지
 router.get('/update-project/:projectId', (req, res) => {
   const projectId = req.params.projectId;
   db.query("SELECT * FROM projects WHERE project_id = ?", [projectId], (err, result) => {
@@ -451,6 +462,7 @@ router.get('/update-project/:projectId', (req, res) => {
   })
 })
 
+//프로젝트 수정 작업
 router.post('/update-project-process', (req, res) => {
   const projectTitle = req.body.projectTitle;
   const projectDescription = req.body.projectDescription;
