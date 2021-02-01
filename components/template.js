@@ -208,7 +208,7 @@ module.exports = {
               <p class="text-success">관찰 위치<p>
               <div id="map" class="shadow w-100" style="height:300px;"></div>
               <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기(3초 소요)</button>
-              <div><small class="text-secondary">내 위치 사용을 원하시면 edumap에게 위치 권한이 있어야합니다. 위치 허용 안내창에서 권한을 허락해주세요. 위치 변경은 3초 정도 소요되니, 버튼을 누르고 조금만 기다려주세요!</small></div>
+              <div><small class="text-secondary">내 위치 사용을 원하시면 위치 권한 안내창에서 <span class="text-danger">권한을 허용해주세요.</span>(기기에 따라 위치 변경 속도가 다릅니다. 버튼을 누르고 조금만 기다려주세요!)</small></div>
             </div>
             </div>
             </div>
@@ -491,7 +491,7 @@ module.exports = {
                   <p class="text-success">관찰 위치</p>
                   <div id="map" class="shadow w-100" style="height:300px;"></div>
                   <button class="btn btn-sm btn-secondary d-block w-100" type="button" onclick="goToMyLocation()">내 위치로 가기(3초 소요)</button>
-                  <div><small class="text-secondary">내 위치 사용을 원하시면 edumap에게 위치 권한이 있어야합니다. 위치 허용 안내창에서 권한을 허락해주세요. 위치 변경은 3초 정도 소요되니, 버튼을 누르고 조금만 기다려주세요!</small></div>
+                  <div><small class="text-secondary">내 위치 사용을 원하시면 위치 권한 안내창에서 <span class="text-danger">권한을 허용해주세요.</span>(기기에 따라 위치 변경 속도가 다릅니다. 버튼을 누르고 조금만 기다려주세요!)</small></div>
                 </div>
               </div>
             </div>
