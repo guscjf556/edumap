@@ -28,6 +28,7 @@ var upload = multer({ storage: _storage });
 // 기본템플릿
 var template = require("../components/template.js");
 var auth = require("../lib/auth");
+const { isBuffer } = require("util");
 
 //개인별 데이터
 router.get("/user", (req, res) => {
@@ -269,11 +270,17 @@ router.get("/post/:postId", (req, res) => {
   res.cookie("url", req.originalUrl);
   const postId = req.params.postId;
   db.query(
-    "SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE postID = ?", [postId], (err, commentsData) => {
+    "SELECT Comments.*, user.displayName FROM Comments LEFT JOIN user ON Comments.commentUserID = user.userID WHERE Comments.postID = ?", [postId], (err, commentsData) => {
+      if(err) throw err;
       db.query(
         "SELECT * FROM topic LEFT JOIN user ON topic.userID = user.userID WHERE topic.id = ?",
         [postId],
         (err, result) => {
+          if(err) throw err
+          if(!result[0]){
+            res.redirect('/o');
+            return;
+          }
           const postData = result[0];
           const body = post(postData, commentsData, req);
           const html = template.HTML(body, auth.StatusUI(req, res));
