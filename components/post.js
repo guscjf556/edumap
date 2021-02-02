@@ -24,7 +24,7 @@ const post = (postData, commentsData, req) => {
   const LatLng = `${postData.Lat},${postData.Lng}`;
 
   let buttonType = ""
-  if(req.user){
+  if(req.user?.userID === postData.userID){
     buttonType = "submit";
   }
   else{
