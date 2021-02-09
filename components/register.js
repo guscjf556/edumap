@@ -46,14 +46,6 @@ const register =  `
         var pwd2 = form_register.pwd2.value;
         const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 
-        if(koreanRegex.test(id) || whitespace.test(id)){
-          emailHelp.classList.remove('text-muted');
-          emailHelp.classList.add('text-danger');
-          emailHelp.style.fontWeight = "bold";
-          emailHelp.previousElementSibling.value = "";
-          return false;
-        }
-
         if(koreanRegex.test(pwd1) || whitespace.test(pwd1)){
           var pwdHelp = document.getElementById('pwdHelp');
           pwdHelp.classList.remove('text-muted');
@@ -78,9 +70,9 @@ const register =  `
       }
 
       $('#user_id').change((e) => {
-        if(whitespace.test(e.target.value)){
+        if(koreanRegex.test(e.target.value) || whitespace.test(e.target.value)){
           e.target.value = "";
-          $('#duplicateCheckResult').html('<span class="text-danger">띄어쓰기는 사용할 수 없습니다.</span>');
+          $('#duplicateCheckResult').html('<span class="text-danger">한글과 띄어쓰기는 사용할 수 없습니다.</span>');
           didCheck = false;
           return;
         }
