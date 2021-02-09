@@ -38,13 +38,15 @@ const register =  `
 
     <script>
       let didCheck = false;
+      const form_register = document.getElementById('form_register');
+      const emailHelp = document.getElementById('emailHelp');
+      const pwd1 = form_register.pwd.value;
+      const pwd2 = form_register.pwd2.value;
       const whitespace = /\\s/g;
+      const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+
       function isValid(){
-        var form_register = document.getElementById('form_register');
-        const id = form_register.user_id.value;
-        var pwd1 = form_register.pwd.value;
-        var pwd2 = form_register.pwd2.value;
-        const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+
 
         if(koreanRegex.test(pwd1) || whitespace.test(pwd1)){
           var pwdHelp = document.getElementById('pwdHelp');
@@ -72,10 +74,17 @@ const register =  `
       $('#user_id').change((e) => {
         if(koreanRegex.test(e.target.value) || whitespace.test(e.target.value)){
           e.target.value = "";
-          $('#duplicateCheckResult').html('<span class="text-danger">한글과 띄어쓰기는 사용할 수 없습니다.</span>');
+          emailHelp.classList.remove('text-muted');
+          emailHelp.classList.add('text-danger');
+          emailHelp.style.fontWeight = "bold";
+          $('#duplicateCheckResult').html('');
           didCheck = false;
           return;
         }
+        emailHelp.classList.remove('text-danger');
+        emailHelp.classList.add('text-muted');
+        emailHelp.style.fontWeight = "normal";
+
         $.ajax({
           url: '/o/check-duplicate-id',
           type: 'post',
