@@ -1,7 +1,4 @@
-const { render } = require("pug")
-
-const register = () => {
-  const render = `
+const register =  `
     <div class="container mt-5">
       <h1 class="display-4 d-flex justify-content-center text-success">회원가입</h1>
       <p class="lead d-flex justify-content-center">아래의 정보를 입력해주세요.</p>
@@ -106,8 +103,5 @@ const register = () => {
       });
     </script>
   `
-
-  return render;
-}
 
 module.exports = register;

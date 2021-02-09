@@ -58,7 +58,7 @@ router.post('/login_process', (req, res, next) => {
 
 // 회원가입
 router.get('/register', function(req, res) {
-  html = template.HTML(register(feedback));
+  html = template.HTML(register);
   res.send(html);
 });
 
