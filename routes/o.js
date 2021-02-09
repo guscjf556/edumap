@@ -511,4 +511,13 @@ router.post('/get-navbar-project-list-process/:userId', (req, res) => {
   });
 });
 
+//회원가입 시 아이디 중복 체크
+router.post('/check-duplicate-id', (req, res) => {
+  const id = req.body.id;
+  db.query("SELECT * FROM user WHERE email = ?", [id], (err, result) => {
+    if(err) throw err;
+    if(result[0]){ res.send(true); } else { res.send(false) };
+  })
+})
+
 module.exports = router;
