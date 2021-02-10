@@ -52,7 +52,6 @@ const register =  `
           var pwdHelp = document.getElementById('pwdHelp');
           pwdHelp.classList.remove('text-muted');
           pwdHelp.classList.add('text-danger');
-          pwdHelp.style.fontWeight = "bold";
           pwdHelp.previousElementSibling.value = "";
           return false;
         }
@@ -62,7 +61,6 @@ const register =  `
           pwd2Help.innerHTML = "비밀번호가 일치하지 않습니다.";
           pwd2Help.classList.remove('text-muted');
           pwd2Help.classList.add('text-danger');
-          pwd2Help.style.fontWeight = "bold";
           pwd2Help.previousElementSibling.value = "";
           return false;
 
@@ -76,14 +74,12 @@ const register =  `
           e.target.value = "";
           emailHelp.classList.remove('text-muted');
           emailHelp.classList.add('text-danger');
-          emailHelp.style.fontWeight = "bold";
           $('#duplicateCheckResult').html('');
           didCheck = false;
           return;
         }
         emailHelp.classList.remove('text-danger');
         emailHelp.classList.add('text-muted');
-        emailHelp.style.fontWeight = "normal";
 
         $.ajax({
           url: '/o/check-duplicate-id',
