@@ -26,7 +26,7 @@ router.get('/login', function(req, res) {
         <form action = "/u/login_process" method = "post">
           <div class="form-group">
             <label for="email">아이디</label>
-            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+            <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp">
           </div>
           <div class="form-group">
             <label for="pw">비밀번호</label>
