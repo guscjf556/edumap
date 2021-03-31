@@ -249,7 +249,7 @@ module.exports = {
   var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().substring(0, 16);
   document.getElementById('o_time').value = localISOTime;
   </script>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=31315423266b80e40912de6b591c6087"></script>
   <script>
   var imageSrc = '../icon/school_plant2.png', // 마커이미지의 주소입니다    
   imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
@@ -558,7 +558,7 @@ module.exports = {
     $('#modal-deletePost').modal('show');
   }
   </script>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a7fd34e10758c080bae3559c743126f9"></script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=31315423266b80e40912de6b591c6087"></script>
   <script>
   var imageSrc = '/icon/school_plant2.png', // 마커이미지의 주소입니다    
   imageSize = new kakao.maps.Size(40, 40), // 마커이미지의 크기입니다
